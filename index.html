@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.16">
 <meta name="author" content="Alex Robenko">
-<title>CommsDSL Specification v5.0</title>
+<title>CommsDSL Specification v6.0</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -655,11 +655,11 @@ pre.rouge {
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>CommsDSL Specification v5.0</h1>
+<h1>CommsDSL Specification v6.0</h1>
 <div class="details">
 <span id="author" class="author">Alex Robenko</span><br>
-<span id="revnumber">version 5.0,</span>
-<span id="revdate">2022-08</span>
+<span id="revnumber">version 6.0,</span>
+<span id="revdate">2023-03</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -722,9 +722,12 @@ pre.rouge {
 <li><a href="#messages-message-length-validation">Message Length Validation</a></li>
 <li><a href="#messages-customization">Customization</a></li>
 <li><a href="#messages-alias-to-fields">Alias Names to Member Fields</a></li>
-<li><a href="#messages-ensuring-serialization-length">Ensuring Serialization Length</a></li>
 <li><a href="#messages-ensuring-overriding-code-injection">Ensuring Overriding Code Injection</a></li>
 <li><a href="#messages-copying-injected-code">Copying Injected Code</a></li>
+<li><a href="#messages-construct-requirements">Extra Construction Requirements</a></li>
+<li><a href="#messages-read-conditions">Extra Read Conditions</a></li>
+<li><a href="#messages-valid-conditions">Extra Validity Conditions</a></li>
+<li><a href="#messages-fail-read-on-invalid">Failing Read on Invalid Contents</a></li>
 </ul>
 </li>
 <li><a href="#interfaces-interfaces">Interfaces</a>
@@ -974,7 +977,7 @@ in detail in <a href="#messages-messages">Messages</a> chapter).</p>
 protocol version and/or extra flags, into the framing information instead of message payload.
 This information needs to be accessible when message payload is being read or
 message object is being handled by the application. The
-<a href="https://github.com/commschamp/comms_champion#comms-library">COMMS Library</a>
+<a href="https://github.com/commschamp/comms">COMMS Library</a>
 handles these cases by having a common interface class for all the messages, which
 contains this extra information. In order to support such cases, the <strong>CommsDSL</strong>
 introduces optional node <strong>&lt;interface&gt;</strong> (described in detail in
@@ -1411,6 +1414,32 @@ referenced fields are not global ones, but a siblings. Such sibling reference ne
             <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"Val1Exists"</span> <span class="na">idx=</span><span class="s">"0"</span> <span class="nt">/&gt;</span>
         <span class="nt">&lt;/set&gt;</span>
         <span class="nt">&lt;optional</span> <span class="na">name=</span><span class="s">"Val1"</span> <span class="na">defaultMode=</span><span class="s">"missing"</span> <span class="na">cond=</span><span class="s">"$Flags.Val1Exists"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"ActVal1"</span> <span class="na">type=</span><span class="s">"uint32"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/optional&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="intro-references-to-interface-fields">References to Interface Fields</h4>
+<div class="paragraph">
+<p>Some properties support references to the member fields of an <a href="#interfaces-interfaces">&lt;interface&gt; </a>.
+Such reference needs to be prefixed with <code>%</code> character.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;interface</span> <span class="na">name=</span><span class="s">"Interface"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;set</span> <span class="na">name=</span><span class="s">"Flags"</span> <span class="na">length=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B0"</span> <span class="na">idx=</span><span class="s">"0"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B1"</span> <span class="na">idx=</span><span class="s">"1"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/set&gt;</span>
+    <span class="nt">&lt;/interface&gt;</span>
+
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="na">id=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;optional</span> <span class="na">name=</span><span class="s">"Val1"</span> <span class="na">defaultMode=</span><span class="s">"missing"</span> <span class="na">cond=</span><span class="s">"%Flags.B0"</span><span class="nt">&gt;</span>
             <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"ActVal1"</span> <span class="na">type=</span><span class="s">"uint32"</span> <span class="nt">/&gt;</span>
         <span class="nt">&lt;/optional&gt;</span>
     <span class="nt">&lt;/fields&gt;</span>
@@ -5574,7 +5603,7 @@ using <strong>cond</strong> <a href="#intro-properties">property</a>.</p>
 that is a member of a <a href="#fields-bundle">&lt;bundle&gt; </a> or a
 <a href="#messages-messages">&lt;message&gt; </a>. The <strong>cond</strong> expression
 specifies condition when the <strong>&lt;optional&gt;</strong> field exists, and must always
-reference other <strong>sibling</strong> field. Such reference is always prefixed with <strong>$</strong> character
+reference other <strong>sibling</strong> field. Such reference is always prefixed with <code>$</code> character
 to indicate that the field is a <strong>sibling</strong> of the <strong>&lt;optional&gt;</strong> and
 not some external field.</p>
 </div>
@@ -5650,6 +5679,44 @@ or <code>&gt;</code> symbols in condition values directly. They need to be subst
     <span class="nt">&lt;/fields&gt;</span>
 <span class="nt">&lt;/schema&gt;</span></code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>Since <strong>v6.0</strong> of this specification referencing of the member fields of an <a href="#interfaces-interfaces">&lt;interface&gt; </a>
+is also supported. Such reference is prefixed with the <code>%</code> character and it works in exactly the same way
+as the reference to a sibling field described above.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;interface</span> <span class="na">name=</span><span class="s">"Interface"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"Flags"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem1"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"6"</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;set</span> <span class="na">name=</span><span class="s">"Mem2"</span> <span class="na">bitLength=</span><span class="s">"2"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B0"</span> <span class="na">idx=</span><span class="s">"0"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B1"</span> <span class="na">idx=</span><span class="s">"1"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/set&gt;</span>
+        <span class="nt">&lt;/fitfield&gt;</span>
+    <span class="nt">&lt;/interface&gt;</span>
+
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="na">id=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;optional</span> <span class="na">name=</span><span class="s">"F1"</span> <span class="na">defaultMode=</span><span class="s">"missing"</span> <span class="na">cond=</span><span class="s">"%Flags.Mem2.B0"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"WrappedF1"</span> <span class="na">type=</span><span class="s">"uint32"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/optional&gt;</span>
+        <span class="nt">&lt;optional</span> <span class="na">name=</span><span class="s">"F2"</span> <span class="na">defaultMode=</span><span class="s">"exists"</span> <span class="na">cond=</span><span class="s">"!%Flags.Mem2.B1"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"WrappedF2"</span> <span class="na">type=</span><span class="s">"uint32"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/optional&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>WARNING</strong>: The <strong>CommsDSL</strong> specification supports multiple interfaces and doesn&#8217;t impose any restriction
+on how they are used in the end application. The schema parser is responsible to do
+a check that <strong>any</strong> (not all) of the previously encountered <strong>&lt;interface&gt;</strong>-es contains
+the referenced field. The code generator may also not impose many restrictions on such references.
+Usage of the wrong <strong>&lt;interface&gt;</strong> class with the missing referenced
+field in the end application may result in compilation errors.</p>
 </div>
 </div>
 <div class="sect3">
@@ -7154,7 +7221,9 @@ and/or data structures to be used for <strong>client</strong> and/or <strong>ser
 <p>Many protocol specifications provide expected serialization length of the message. In order to
 prevent various typos or copy-paste errors, the <strong>CommsDSL</strong> provides an ability to
 validate the specified message length during the schema file parsing. To perform such a
-check use <strong>validateMinLength</strong> <a href="#intro-properties">property</a>.</p>
+check use <strong>validateMinLength</strong> <a href="#intro-properties">property</a> with <a href="#intro-numeric">unsigned</a> value.
+It can help to avoid some copy-paste or typo errors
+at the time of schema parsing rather than debugging generated incorrect code.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -7184,33 +7253,6 @@ customizable at compile time.</p>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="na">id=</span><span class="s">"1"</span> <span class="na">customizable=</span><span class="s">"true"</span><span class="nt">&gt;</span>
-        ...
-    <span class="nt">&lt;/message&gt;</span>
-<span class="nt">&lt;/schema&gt;</span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="messages-alias-to-fields">Alias Names to Member Fields</h3>
-<div class="paragraph">
-<p>Sometimes an existing member field may be renamed and/or moved. It is possible to
-create alias names for the fields to keep the old client code being able to compile
-and work. Please refer to <a href="#aliases-aliases">Aliases</a> chapter for more details.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="messages-ensuring-serialization-length">Ensuring Serialization Length</h3>
-<div class="paragraph">
-<p>Many protocol specifications indicate the expected message serialization length, especially
-when message has fixed length. The <strong>CommsDSL</strong> allows specifying expected minimal length
-using <strong>validateMinLength</strong> property with <a href="#intro-numeric">unsigned</a> value to help avoid some copy-paste or typo errors
-at the time of schema parsing rather than debugging generated incorrect code.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
     <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="na">id=</span><span class="s">"1"</span> <span class="na">validateMinLength=</span><span class="s">"6"</span><span class="nt">&gt;</span>
         <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"F1"</span> <span class="na">type=</span><span class="s">"uint32"</span> <span class="nt">/&gt;</span>
         <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"F2"</span> <span class="na">type=</span><span class="s">"int16"</span> <span class="nt">/&gt;</span>
@@ -7228,6 +7270,14 @@ of its <a href="#fields-optional-existence-conditions">existence conditions</a>.
 <div class="paragraph">
 <p>Also note, that the value of <strong>validateMinLength</strong> is the expected serialization length of
 message fields <em>without</em> the fields of the <a href="#frames-frames">&lt;frame&gt; </a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="messages-alias-to-fields">Alias Names to Member Fields</h3>
+<div class="paragraph">
+<p>Sometimes an existing member field may be renamed and/or moved. It is possible to
+create alias names for the fields to keep the old client code being able to compile
+and work. Please refer to <a href="#aliases-aliases">Aliases</a> chapter for more details.</p>
 </div>
 </div>
 <div class="sect2">
@@ -7304,13 +7354,382 @@ It means that some portion of copied code can be cleared.</p>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;fields&gt;</span>
     <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="err">...</span> <span class="na">nameOverride=</span><span class="s">"replace"</span><span class="nt">&gt;</span>
         ...
     <span class="nt">&lt;/message&gt;</span>
 
     <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg2"</span> <span class="na">copyCodeFrom=</span><span class="s">"Msg1"</span> <span class="na">nameOverride=</span><span class="s">"none"</span><span class="nt">&gt;</span>
             ...
+    <span class="nt">&lt;/message&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="messages-construct-requirements">Extra Construction Requirements</h3>
+<div class="paragraph">
+<p>In some cases the message object construction may require updating
+fields in its <a href="#interfaces-interfaces">&lt;interface&gt; </a>. The
+<strong>CommsDSL</strong> provides such an ability using the <strong>construct</strong> property.
+The reference to the interface field is performed using the same syntax
+as with the <a href="#fields-optional">&lt;optional&gt; </a> field&#8217;s <a href="#fields-optional-existence-conditions">existence conditions</a>,
+i.e. using <code>%</code> prefix.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;interface</span> <span class="na">name=</span><span class="s">"Interface"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"Flags"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;set</span> <span class="na">name=</span><span class="s">"Bits"</span> <span class="na">bitLength=</span><span class="s">"4"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B0"</span> <span class="na">idx=</span><span class="s">"0"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B1"</span> <span class="na">idx=</span><span class="s">"1"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/set&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Extra"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/bitfield&gt;</span>
+    <span class="nt">&lt;/interface&gt;</span>
+
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="err">...</span> <span class="na">construct=</span><span class="s">"%Flags.Bits.B0"</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/message&gt;</span>
+
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg2"</span> <span class="err">...</span> <span class="na">construct=</span><span class="s">"%Flags.Extra = 2"</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/message&gt;</span>
+
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the example above <code>Msg1</code> constructor must set <code>Flags.Bits.B0</code> bit, while <code>Msg2</code>
+constructor must assign <code>2</code> to the <code>Flags.Extra</code> field.</p>
+</div>
+<div class="paragraph">
+<p>To perform multiple updates to the interface fields the <code>&lt;construct&gt;</code> child node with its single <code>&lt;and&gt;</code> child node must be used.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;interface</span> <span class="na">name=</span><span class="s">"Interface"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"Flags"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;set</span> <span class="na">name=</span><span class="s">"Bits"</span> <span class="na">bitLength=</span><span class="s">"4"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B0"</span> <span class="na">idx=</span><span class="s">"0"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B1"</span> <span class="na">idx=</span><span class="s">"1"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/set&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Extra"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/bitfield&gt;</span>
+    <span class="nt">&lt;/interface&gt;</span>
+
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="err">...</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;construct&gt;</span>
+            <span class="nt">&lt;and&gt;</span>
+                <span class="nt">&lt;construct</span> <span class="na">value=</span><span class="s">"%Flags.Bits.B0"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;construct</span> <span class="na">value=</span><span class="s">"!%Flags.Bits.B1"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;construct</span> <span class="na">value=</span><span class="s">"%Flags.Extra = 1"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;/and&gt;</span>
+        <span class="nt">&lt;/construct&gt;</span>
+        <span class="nt">&lt;fields&gt;</span>
+            ...
+        <span class="nt">&lt;/fields&gt;</span>
+    <span class="nt">&lt;/message&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>&lt;construct&gt;</code> nodes are very similar to the <code>&lt;cond&gt;</code> ones used to describe multiple
+<a href="#fields-optional-existence-conditions">existence conditions</a> of the <a href="#fields-optional">&lt;optional&gt; </a>
+field, but with some limitations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Only bit sets and equality statements are supported.</p>
+</li>
+<li>
+<p>Only <code>&lt;and&gt;</code> nodes are supported.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>WARNING</strong>: The <strong>CommsDSL</strong> specification supports multiple interfaces and doesn&#8217;t impose any restriction
+on how they are used in the end application. The schema parser is responsible to do
+a check that <strong>any</strong> (not all) of the previously encountered <strong>&lt;interface&gt;</strong>-es contains
+the referenced field. The code generator may also not impose many restrictions on such references.
+Usage of the wrong <strong>&lt;interface&gt;</strong> class with the missing referenced
+field in the end application may result in compilation errors.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="messages-read-conditions">Extra Read Conditions</h3>
+<div class="paragraph">
+<p>The <strong>read</strong> operation of every <a href="#messages-messages">&lt;message&gt; </a> means invoking
+the <strong>read</strong> operation for every one of its member fields. However, there may be cases
+when preliminary evaluation of the <a href="#interfaces-interfaces">&lt;interface&gt; </a> fields
+needs to be performed. To do so the <strong>readCond</strong> property referencing appropriate
+<a href="#interfaces-interfaces">&lt;interface&gt; </a> fields can be used. The syntax is
+the same as with the <a href="#fields-optional">&lt;optional&gt; </a> field&#8217;s <a href="#fields-optional-existence-conditions">existence conditions</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;interface</span> <span class="na">name=</span><span class="s">"Interface"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"Flags"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;set</span> <span class="na">name=</span><span class="s">"Bits"</span> <span class="na">bitLength=</span><span class="s">"4"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B0"</span> <span class="na">idx=</span><span class="s">"0"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B1"</span> <span class="na">idx=</span><span class="s">"1"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/set&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Extra"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/bitfield&gt;</span>
+    <span class="nt">&lt;/interface&gt;</span>
+
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="err">...</span> <span class="na">readCond=</span><span class="s">"!%Flags.Bits.B1"</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/message&gt;</span>
+
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg2"</span> <span class="err">...</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;readCond&gt;</span>
+            <span class="nt">&lt;or&gt;</span>
+                <span class="nt">&lt;readCond</span> <span class="na">value=</span><span class="s">"%Flags.Bits.B0"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;and&gt;</span>
+                    <span class="nt">&lt;readCond</span> <span class="na">value=</span><span class="s">"!%Flags.Bits.B1"</span><span class="nt">&gt;</span>
+                    <span class="nt">&lt;readCond</span> <span class="na">value=</span><span class="s">"%Flags.Extra = 1"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;/and&gt;</span>
+            <span class="nt">&lt;/or&gt;</span>
+        <span class="nt">&lt;/readCond&gt;</span>
+        <span class="nt">&lt;fields&gt;</span>
+            ...
+        <span class="nt">&lt;/fields&gt;</span>
+    <span class="nt">&lt;/message&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In case of multiple conditions the <strong>readCond</strong> needs to be specified
+as the <code>&lt;readCond&gt;</code> child node with a single <code>&lt;and&gt;</code> or <code>&lt;or&gt;</code> immediate child.
+Nested <code>&lt;and&gt;</code> and/or <code>&lt;or&gt;</code> conditions are allowed in the same way as with the
+<a href="#fields-optional">&lt;optional&gt; </a> field&#8217;s <a href="#fields-optional-existence-conditions">existence conditions</a>.
+The only difference is that the inner child nodes must be named <code>readCond</code> instead of <code>cond</code>.</p>
+</div>
+<div class="paragraph">
+<p>Quite often the <a href="#messages-read-conditions">Extra Read Conditions</a> (<strong>readCond</strong>) are the same as the <a href="#messages-construct-requirements">Extra Construction Requirements</a> (<strong>construct</strong>).
+To avoid unnecessary statements duplication there is <strong>constructAsReadCond</strong> property with
+<a href="#intro-boolean">boolean</a> value to force copying <strong>construct</strong> value(s) to the <strong>readCond</strong>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;interface</span> <span class="na">name=</span><span class="s">"Interface"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"Flags"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;set</span> <span class="na">name=</span><span class="s">"Bits"</span> <span class="na">bitLength=</span><span class="s">"4"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B0"</span> <span class="na">idx=</span><span class="s">"0"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B1"</span> <span class="na">idx=</span><span class="s">"1"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/set&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Extra"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/bitfield&gt;</span>
+    <span class="nt">&lt;/interface&gt;</span>
+
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="err">...</span> <span class="na">constructAsReadCond=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;construct&gt;</span>
+            <span class="nt">&lt;and&gt;</span>
+                <span class="nt">&lt;construct</span> <span class="na">value=</span><span class="s">"%Flags.Bits.B0"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;construct</span> <span class="na">value=</span><span class="s">"!%Flags.Bits.B1"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;construct</span> <span class="na">value=</span><span class="s">"%Flags.Extra = 1"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;/and&gt;</span>
+        <span class="nt">&lt;/construct&gt;</span>
+        <span class="nt">&lt;fields&gt;</span>
+            ...
+        <span class="nt">&lt;/fields&gt;</span>
+    <span class="nt">&lt;/message&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is equivalent to</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;interface</span> <span class="na">name=</span><span class="s">"Interface"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"Flags"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;set</span> <span class="na">name=</span><span class="s">"Bits"</span> <span class="na">bitLength=</span><span class="s">"4"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B0"</span> <span class="na">idx=</span><span class="s">"0"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B1"</span> <span class="na">idx=</span><span class="s">"1"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/set&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Extra"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/bitfield&gt;</span>
+    <span class="nt">&lt;/interface&gt;</span>
+
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="err">...</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;construct&gt;</span>
+            <span class="nt">&lt;and&gt;</span>
+                <span class="nt">&lt;construct</span> <span class="na">value=</span><span class="s">"%Flags.Bits.B0"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;construct</span> <span class="na">value=</span><span class="s">"!%Flags.Bits.B1"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;construct</span> <span class="na">value=</span><span class="s">"%Flags.Extra = 1"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;/and&gt;</span>
+        <span class="nt">&lt;/construct&gt;</span>
+        <span class="nt">&lt;readCond&gt;</span>
+            <span class="nt">&lt;and&gt;</span>
+                <span class="nt">&lt;readCond</span> <span class="na">value=</span><span class="s">"%Flags.Bits.B0"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;readCond</span> <span class="na">value=</span><span class="s">"!%Flags.Bits.B1"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;readCond</span> <span class="na">value=</span><span class="s">"%Flags.Extra = 1"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;/and&gt;</span>
+        <span class="nt">&lt;/readCond&gt;</span>
+        <span class="nt">&lt;fields&gt;</span>
+            ...
+        <span class="nt">&lt;/fields&gt;</span>
+    <span class="nt">&lt;/message&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="messages-valid-conditions">Extra Validity Conditions</h3>
+<div class="paragraph">
+<p>The <strong>valid</strong> operation of every <a href="#messages-messages">&lt;message&gt; </a> means invoking
+the <strong>valid</strong> operation for every one of its member fields. However, the valid values
+of fields may be interdependent. There may be a need to introduce extra validity checks
+on the message contents. To do so the <strong>validCond</strong> property referencing appropriate
+<a href="#interfaces-interfaces">&lt;interface&gt; </a> fields and/or fields of the
+<a href="#messages-messages">&lt;message&gt; </a> itself can be used. The syntax is
+the same as with the <a href="#fields-optional">&lt;optional&gt; </a> field&#8217;s
+<a href="#fields-optional-existence-conditions">existence conditions</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;interface</span> <span class="na">name=</span><span class="s">"Interface"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"Flags"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;set</span> <span class="na">name=</span><span class="s">"Bits"</span> <span class="na">bitLength=</span><span class="s">"4"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B0"</span> <span class="na">idx=</span><span class="s">"0"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B1"</span> <span class="na">idx=</span><span class="s">"1"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/set&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Extra"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/bitfield&gt;</span>
+    <span class="nt">&lt;/interface&gt;</span>
+
+
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="err">...</span> <span class="na">validCond=</span><span class="s">"!%Flags.Bits.B1"</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/message&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In case of multiple conditions the <strong>validCond</strong> needs to be specified
+as the <code>&lt;validCond&gt;</code> child node with a single <code>&lt;and&gt;</code> or <code>&lt;or&gt;</code> immediate child.
+Nested <code>&lt;and&gt;</code> and/or <code>&lt;or&gt;</code> conditions are allowed in the same way as with the
+<a href="#fields-optional">&lt;optional&gt; </a> field&#8217;s <a href="#fields-optional-existence-conditions">existence conditions</a>.
+The only difference is that the inner child nodes must be named <code>validCond</code> instead of <code>cond</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;interface</span> <span class="na">name=</span><span class="s">"Interface"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"Flags"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;set</span> <span class="na">name=</span><span class="s">"Bits"</span> <span class="na">bitLength=</span><span class="s">"4"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B0"</span> <span class="na">idx=</span><span class="s">"0"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B1"</span> <span class="na">idx=</span><span class="s">"1"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/set&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Extra"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/bitfield&gt;</span>
+    <span class="nt">&lt;/interface&gt;</span>
+
+
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="err">...</span> <span class="nt">&gt;</span>
+        <span class="nt">&lt;fields&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"F1"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"F2"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/fields&gt;</span>
+        <span class="nt">&lt;validCond&gt;</span>
+            <span class="nt">&lt;and&gt;</span>
+                <span class="nt">&lt;validCond</span> <span class="na">value=</span><span class="s">"!%Flags.Bits.B1"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;or&gt;</span>
+                    <span class="nt">&lt;validCond</span> <span class="na">value=</span><span class="s">"$F1 = 0"</span> <span class="nt">/&gt;</span>
+                    <span class="nt">&lt;validCond</span> <span class="na">value=</span><span class="s">"$F2 != F1"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;/or&gt;</span>
+            <span class="nt">&lt;/and&gt;</span>
+        <span class="nt">&lt;/validCond&gt;</span>
+    <span class="nt">&lt;/message&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Quite often the <a href="#messages-valid-conditions">Extra Validity Conditions</a> (<strong>validCond</strong>) are the same as the <a href="#messages-construct-requirements">Extra Construction Requirements</a> (<strong>construct</strong>).
+To avoid unnecessary statements duplication there is <strong>constructAsValidCond</strong> property with
+<a href="#intro-boolean">boolean</a> value to force copying <strong>construct</strong> value(s) to the <strong>validCond</strong>, similar
+to the <strong>constructAsReadCond</strong> property described <a href="#messages-read-conditions">above</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;interface</span> <span class="na">name=</span><span class="s">"Interface"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"Flags"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;set</span> <span class="na">name=</span><span class="s">"Bits"</span> <span class="na">bitLength=</span><span class="s">"4"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B0"</span> <span class="na">idx=</span><span class="s">"0"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"B1"</span> <span class="na">idx=</span><span class="s">"1"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/set&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Extra"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/bitfield&gt;</span>
+    <span class="nt">&lt;/interface&gt;</span>
+
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="err">...</span> <span class="na">constructAsValidCond=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;construct&gt;</span>
+            ...
+        <span class="nt">&lt;/construct&gt;</span>
+        <span class="nt">&lt;fields&gt;</span>
+            ...
+        <span class="nt">&lt;/fields&gt;</span>
+    <span class="nt">&lt;/message&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="messages-fail-read-on-invalid">Failing Read on Invalid Contents</h3>
+<div class="paragraph">
+<p>In the <a href="#messages-valid-conditions">previous section</a> it was shown that the <code>&lt;message&gt;</code>
+can have extra conditions for its payload to be valid. Sometimes these extra conditions are
+required to be taken into account during the <strong>read</strong> operation and the latter should
+fail in case the message contents are invalid. To support such case the
+<strong>failOnInvalid</strong> <a href="#intro-properties">property</a> with boolean value should be used
+(the same way as with <a href="#fields-common-failing-read-of-the-field-on-invalid-value">fields</a>).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="err">...</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;fields&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"F1"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"F2"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/fields&gt;</span>
+        <span class="nt">&lt;validCond&gt;</span>
+            <span class="nt">&lt;or&gt;</span>
+                <span class="nt">&lt;validCond</span> <span class="na">value=</span><span class="s">"$F1 = 0"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;validCond</span> <span class="na">value=</span><span class="s">"$F2 != F1"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/or&gt;</span>
+        <span class="nt">&lt;/validCond&gt;</span>
+    <span class="nt">&lt;/message&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <strong>failOnInvalid</strong> property for the <code>&lt;message&gt;</code> can also be used to fail the <strong>read</strong> operation in
+case any of the member fields has an invalid value.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="err">...</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"F1"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">validRange=</span><span class="s">"[0, 10]"</span> <span class="nt">/&gt;</span>
     <span class="nt">&lt;/message&gt;</span>
 <span class="nt">&lt;/schema&gt;</span></code></pre>
 </div>
@@ -8971,6 +9390,11 @@ in this document for a quick reference.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">5</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Reference to a field in a different schema.</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><code>%</code></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">6</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reference to a field in an <a href="#interfaces-interfaces">&lt;interface&gt; </a>.</p></td>
+</tr>
 </tbody>
 </table>
 <div style="page-break-after: always;"></div>
@@ -9001,36 +9425,12 @@ in this document for a quick reference.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the protocol. Allowed to have spaces.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>endian</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">"big" or "little"</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">little</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Endian of the protocol.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>description</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Human readable description of the protocol.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>version</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>dslVersion</strong></p></td>
@@ -9041,12 +9441,36 @@ in this document for a quick reference.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Version of the used DSL.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>endian</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">"big" or "little"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">little</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Endian of the protocol.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the protocol. Allowed to have spaces.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>nonUniqueMsgIdAllowed</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Allow non-unique numeric message IDs.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>version</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol.</p></td>
 </tr>
 </tbody>
 </table>
@@ -9078,12 +9502,30 @@ in this document for a quick reference.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyCodeFrom</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-references">reference</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">5</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the field.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specify field, overriding or other extra code of which needs to be copied.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>customizable</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mark the field to allow compile time customization regardless of code generator&#8217;s level of customization.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>deprecated</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">max unsigned</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which field was deprecated.<br>
+Must be greater than value of <strong>sinceVersion</strong>.<br>
+Applipable only to members of the <a href="#messages-messages">&lt;message&gt; </a> or <a href="#fields-bundle">&lt;bundle&gt; </a>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>description</strong></p></td>
@@ -9094,12 +9536,12 @@ in this document for a quick reference.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Human readable description of the field.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reuse</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-references">reference</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayHidden</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Field, definition of which to copy.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Don&#8217;t display field at all in visual analysis tool(s).</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayName</strong></p></td>
@@ -9118,31 +9560,68 @@ in this document for a quick reference.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Disable modification of the field in visual analysis tool(s).</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayHidden</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>failOnInvalid</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Don&#8217;t display field at all in visual analysis tool(s).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fail <strong>read</strong> operation if read value is invalid.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>sinceVersion</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>forceGen</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">3</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which field was introduced.<br>
-Applicable only to members of the <a href="#messages-messages">&lt;message&gt; </a> or <a href="#fields-bundle">&lt;bundle&gt; </a>.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Force generation of field&#8217;s code regardless of it&#8217;s being referenced or not.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>deprecated</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>lengthOverride</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>length</strong> retrieval.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the field.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>nameOverride</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>name</strong> retrieval.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>pseudo</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">max unsigned</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which field was deprecated.<br>
-Must be greater than value of <strong>sinceVersion</strong>.<br>
-Applipable only to members of the <a href="#messages-messages">&lt;message&gt; </a> or <a href="#fields-bundle">&lt;bundle&gt; </a>.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">In case of <strong>true</strong>, don&#8217;t serialize/deserialize this field.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>readOverride</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>read</strong> operation.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>refreshOverride</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>refresh</strong> operation.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>removed</strong></p></td>
@@ -9154,28 +9633,20 @@ Applipable only to members of the <a href="#messages-messages">&lt;message&gt; <
 Applicable only to members of the <a href="#messages-messages">&lt;message&gt; </a> or <a href="#fields-bundle">&lt;bundle&gt; </a>.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>failOnInvalid</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reuse</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-references">reference</a> string</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Fail <strong>read</strong> operation if read value is invalid.</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Field, definition of which to copy.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>pseudo</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reuseCode</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">5</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">In case of <strong>true</strong>, don&#8217;t serialize/deserialize this field.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>customizable</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Mark the field to allow compile time customization regardless of code generator&#8217;s level of customization.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">In case of <strong>reuse</strong> apply <strong>copyCodeFrom</strong> with the same <a href="#intro-references">reference</a> string.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>semanticType</strong></p></td>
@@ -9186,52 +9657,13 @@ Applicable only to members of the <a href="#messages-messages">&lt;message&gt; <
 <td class="tableblock halign-left valign-top"><p class="tableblock">Specify semantic type of the field. It allows code generator to generate special code for special cases. Value "length" was introduced in <strong>v2</strong> of this specification.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>forceGen</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">3</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>sinceVersion</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Force generation of field&#8217;s code regardless of it&#8217;s being referenced or not.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>valueOverride</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>value</strong> operation.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>readOverride</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>read</strong> operation.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>writeOverride</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>write</strong> operation.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>refreshOverride</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>refresh</strong> operation.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>lengthOverride</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>length</strong> retrieval.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which field was introduced.<br>
+Applicable only to members of the <a href="#messages-messages">&lt;message&gt; </a> or <a href="#fields-bundle">&lt;bundle&gt; </a>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validOverride</strong></p></td>
@@ -9242,28 +9674,20 @@ Applicable only to members of the <a href="#messages-messages">&lt;message&gt; <
 <td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>valid</strong> retrieval.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>nameOverride</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>valueOverride</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>name</strong> retrieval.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>value</strong> operation.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyCodeFrom</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-references">reference</a> string</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">5</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>writeOverride</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Specify field, overriding or other extra code of which needs to be copied.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reuseCode</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">5</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">In case of <strong>reuse</strong> apply <strong>copyCodeFrom</strong> with the same <a href="#intro-references">reference</a> string.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>write</strong> operation.</p></td>
 </tr>
 </tbody>
 </table>
@@ -9297,12 +9721,20 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>type</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "intvar", "uintvar"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>availableLengthLimit</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allow having less bytes in the buffer than required by the <strong>type</strong> when performing (de)serialization.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>bitLength</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Underlying primitive type.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">length of <strong>type</strong> in bits</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Serialization length in bits, applicable only to a member of <a href="#fields-bitfield">&lt;bitfield&gt; </a>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>defaultValue</strong></p></td>
@@ -9321,28 +9753,20 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Endian of the field.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>length</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">length of <strong>type</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Forced serialization length.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>bitLength</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">length of <strong>type</strong> in bits</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Serialization length in bits, applicable only to a member of <a href="#fields-bitfield">&lt;bitfield&gt; </a>.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>hexAssign</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Force generated code to assign enum values using hexadecimal numbers.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>length</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">length of <strong>type</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Forced serialization length.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>nonUniqueAllowed</strong></p></td>
@@ -9353,20 +9777,20 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Allow non unique <strong>&lt;validValue&gt;</strong>-es.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>type</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "intvar", "uintvar"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Underlying primitive type.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validCheckVersion</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Take into account protocol version when generating code for field&#8217;s value validity check.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>availableLengthLimit</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Allow having less bytes in the buffer than required by the <strong>type</strong> when performing (de)serialization.</p></td>
 </tr>
 </tbody>
 </table>
@@ -9393,20 +9817,13 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>deprecated</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the value.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>val</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Numeric value.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">max unsigned</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which value was deprecated.<br>
+Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>description</strong></p></td>
@@ -9425,6 +9842,14 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Human readable name of the value to display in various analysis tools.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the value.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>sinceVersion</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
@@ -9433,13 +9858,12 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which value was introduced.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>deprecated</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>val</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">max unsigned</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which value was deprecated.<br>
-Must be greater than value of <strong>sinceVersion</strong>.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Numeric value.</p></td>
 </tr>
 </tbody>
 </table>
@@ -9474,12 +9898,28 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>type</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "intvar", "uintvar"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>availableLengthLimit</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allow having less bytes in the buffer than required by the <strong>type</strong> when performing (de)serialization.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>bitLength</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">length of <strong>type</strong> in bits</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Serialization length in bits, applicable only to a member of <a href="#fields-bitfield">&lt;bitfield&gt; </a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>defaultValidValue</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a> or <a href="#intro-names">name</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Underlying primitive type.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Convenience bunding of the <strong>defaultValue</strong> and <strong>validValue</strong> into a single property.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>defaultValue</strong></p></td>
@@ -9488,6 +9928,30 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default value. Must fit the underlying <strong>type</strong>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayDecimals</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Indicates to GUI analysis tools to display this field as floating point value with specified number of digits after the fraction point.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayOffset</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Indicates to GUI analysis tools to add specified offset value to a field&#8217;s value when displaying it.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displaySpecials</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">2</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control displaying <strong>&lt;special&gt;</strong> values in analysis tools.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>endian</strong></p></td>
@@ -9506,12 +9970,12 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Forced serialization length.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>bitLength</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>nonUniqueSpecialsAllowed</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">2</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">length of <strong>type</strong> in bits</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Serialization length in bits, applicable only to a member of <a href="#fields-bitfield">&lt;bitfield&gt; </a>.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allow non unique <strong>&lt;special&gt;</strong>-s.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>serOffset</strong></p></td>
@@ -9538,12 +10002,44 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Scaling ratio.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>type</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">"int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64", "intvar", "uintvar"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Underlying primitive type.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>units</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#appendix-units">units</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Units of the value.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validCheckVersion</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Take into account protocol version when generating code for field&#8217;s value validity check.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validMax</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Valid maximal value. All the numbers below it are considered to be valid.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validMin</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Valid minimal value. All the numbers above it are considered to be valid.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validRange</strong></p></td>
@@ -9560,78 +10056,6 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Valid value.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validMin</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Valid minimal value. All the numbers above it are considered to be valid.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validMax</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Valid maximal value. All the numbers below it are considered to be valid.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validCheckVersion</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Take into account protocol version when generating code for field&#8217;s value validity check.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayDecimals</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Indicates to GUI analysis tools to display this field as floating point value with specified number of digits after the fraction point.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayOffset</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Indicates to GUI analysis tools to add specified offset value to a field&#8217;s value when displaying it.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>nonUniqueSpecialsAllowed</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">2</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Allow non unique <strong>&lt;special&gt;</strong>-s.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displaySpecials</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">2</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control displaying <strong>&lt;special&gt;</strong> values in analysis tools.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>defaultValidValue</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a> or <a href="#intro-names">name</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Convenience bunding of the <strong>defaultValue</strong> and <strong>validValue</strong> into a single property.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>availableLengthLimit</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Allow having less bytes in the buffer than required by the <strong>type</strong> when performing (de)serialization.</p></td>
 </tr>
 </tbody>
 </table>
@@ -9658,20 +10082,13 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>deprecated</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the value.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>val</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Numeric value.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">max unsigned</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which value was deprecated.<br>
+Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>description</strong></p></td>
@@ -9682,6 +10099,22 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Human readable description of the value.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayName</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">2</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name to display in various analysis tools.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the value.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>sinceVersion</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
@@ -9690,21 +10123,12 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which value was introduced.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>deprecated</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>val</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">max unsigned</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which value was deprecated.<br>
-Must be greater than value of <strong>sinceVersion</strong>.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayName</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">2</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
 <td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name to display in various analysis tools.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Numeric value.</p></td>
 </tr>
 </tbody>
 </table>
@@ -9739,28 +10163,12 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>type</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">"uint8", "uint16", "uint32", "uint64"</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes (no if <strong>length</strong> is specified)</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Underlying primitive type.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>length</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes (no if <strong>type</strong> is specifed)</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">length of <strong>type</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Serialization length.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>bitLength</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>availableLengthLimit</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">length of <strong>type</strong> in bits</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Serialization length in bits, applicable only to a member of <a href="#fields-bitfield">&lt;bitfield&gt; </a>.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allow having less bytes in the buffer than required by the <strong>type</strong> or <strong>length</strong> when performing (de)serialization.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>defaultValue</strong></p></td>
@@ -9771,20 +10179,28 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default initialization value of every bit.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reservedValue</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Expected value of every reserved bit.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>endian</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">"big" or "little"</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">endian of <a href="#schema-schema">schema</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Endian of the field.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>bitLength</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">length of <strong>type</strong> in bits</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Serialization length in bits, applicable only to a member of <a href="#fields-bitfield">&lt;bitfield&gt; </a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>length</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes (no if <strong>type</strong> is specifed)</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">length of <strong>type</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Serialization length.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>nonUniqueAllowed</strong></p></td>
@@ -9795,20 +10211,28 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Allow non unique <strong>&lt;bit&gt;</strong>-s.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reservedValue</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Expected value of every reserved bit.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>type</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">"uint8", "uint16", "uint32", "uint64"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes (no if <strong>length</strong> is specified)</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Underlying primitive type.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validCheckVersion</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Take into account protocol version when generating code for field&#8217;s value validity check.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>availableLengthLimit</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Allow having less bytes in the buffer than required by the <strong>type</strong> or <strong>length</strong> when performing (de)serialization.</p></td>
 </tr>
 </tbody>
 </table>
@@ -9835,20 +10259,21 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>defaultValue</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the value.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>defaultValue</strong> of the <strong>&lt;set&gt;</strong> field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default value of the bit (when constructed).</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>idx</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>deprecated</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Index of the specified bit. Counting starts from least significant bit.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">max unsigned</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which bit was deprecated (became reserved).<br>
+Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>description</strong></p></td>
@@ -9867,20 +10292,20 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Human readable name of the bit to display in various analysis tools.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>defaultValue</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>idx</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>defaultValue</strong> of the <strong>&lt;set&gt;</strong> field</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default value of the bit (when constructed).</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Index of the specified bit. Counting starts from least significant bit.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reservedValue</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reservedValue</strong> of the <strong>&lt;set&gt;</strong> field</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Expected value of the bit if it is reserved.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the value.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reserved</strong></p></td>
@@ -9891,21 +10316,20 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Mark / Unmark the bit as being reserved.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reservedValue</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reservedValue</strong> of the <strong>&lt;set&gt;</strong> field</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Expected value of the bit if it is reserved.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>sinceVersion</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which bit was introduced (became non-reserved).</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>deprecated</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">max unsigned</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which bit was deprecated (became reserved).<br>
-Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -10035,14 +10459,14 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;members&gt;</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Wraps member fields.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;alias&gt;</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">3</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Alias names for other member fields. See <a href="#aliases-aliases">Aliases</a> for more info.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;members&gt;</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wraps member fields.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;replace&gt;</strong></p></td>
@@ -10199,14 +10623,6 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>element</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#fields-fields">field</a> or <a href="#intro-references">reference</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Element of the field.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>count</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
@@ -10223,12 +10639,20 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Prefix field containing number of elements in the list. Cannot be used tegether with <strong>count</strong> or <strong>lengthPrefix</strong>.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>lengthPrefix</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>element</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#fields-fields">field</a> or <a href="#intro-references">reference</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
 <td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Prefix field containing serialization length of the list. Cannot be used tegether with <strong>count</strong> or <strong>countPrefix</strong>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Element of the field.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>elemFixedLength</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Indication of whether list has and will allways have fixed length element, so <strong>elemLengthPrefix</strong> prefixes only the first element and not the rest.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>elemLengthPrefix</strong></p></td>
@@ -10239,12 +10663,12 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Prefix field containing serialization length of the list <strong>element</strong>.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>elemFixedLength</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>lengthPrefix</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#fields-fields">field</a> or <a href="#intro-references">reference</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Indication of whether list has and will allways have fixed length element, so <strong>elemLengthPrefix</strong> prefixes only the first element and not the rest.</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Prefix field containing serialization length of the list. Cannot be used tegether with <strong>count</strong> or <strong>countPrefix</strong>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>termSuffix</strong></p></td>
@@ -10286,20 +10710,28 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>type</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">"float", "double"</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Underlying primitive type</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>defaultValue</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">floating point value, <strong>nan</strong>, <strong>inf</strong>, <strong>-inf</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">0.0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default value. Must fit the underlying <strong>type</strong>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayDecimals</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Indicates to GUI analysis how many digits need to be displayed after the fraction point.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displaySpecials</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">2</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control displaying <strong>&lt;special&gt;</strong> values in analysis tools.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>endian</strong></p></td>
@@ -10310,12 +10742,60 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Endian of the field.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>nonUniqueSpecialsAllowed</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">2</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allow non unique <strong>&lt;special&gt;</strong>-s.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>type</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">"float", "double"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Underlying primitive type</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>units</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#appendix-units">units</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Units of the value.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validCheckVersion</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Take into account protocol version when generating code for field&#8217;s value validity check.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validFullRange</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mark all the range of existing FP values to be valid, excluding <strong>nan</strong>, <strong>inf</strong>, and <strong>-inf</strong>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validMax</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">floating point value</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Valid maximal value. All the numbers below it are considered to be valid.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validMin</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">floating point value</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Valid minimal value. All the numbers above it are considered to be valid.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validRange</strong></p></td>
@@ -10332,62 +10812,6 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Valid value.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validMin</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">floating point value</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Valid minimal value. All the numbers above it are considered to be valid.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validMax</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">floating point value</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Valid maximal value. All the numbers below it are considered to be valid.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validFullRange</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Mark all the range of existing FP values to be valid, excluding <strong>nan</strong>, <strong>inf</strong>, and <strong>-inf</strong>.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validCheckVersion</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Take into account protocol version when generating code for field&#8217;s value validity check.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayDecimals</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Indicates to GUI analysis how many digits need to be displayed after the fraction point.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>nonUniqueSpecialsAllowed</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">2</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Allow non unique <strong>&lt;special&gt;</strong>-s.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displaySpecials</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">2</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control displaying <strong>&lt;special&gt;</strong> values in analysis tools.</p></td>
 </tr>
 </tbody>
 </table>
@@ -10414,20 +10838,13 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>deprecated</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the value.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>val</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">floating point value, <strong>nan</strong>, <strong>inf</strong>, <strong>-inf</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Numeric value.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">max unsigned</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which value was deprecated.<br>
+Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>description</strong></p></td>
@@ -10438,6 +10855,22 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Human readable description of the value.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayName</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">2</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name to display in various analysis tools.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the value.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>sinceVersion</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
@@ -10446,21 +10879,12 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which value was introduced.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>deprecated</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>val</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">floating point value, <strong>nan</strong>, <strong>inf</strong>, <strong>-inf</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">max unsigned</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which value was deprecated.<br>
-Must be greater than value of <strong>sinceVersion</strong>.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayName</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">2</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
 <td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name to display in various analysis tools.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Numeric value.</p></td>
 </tr>
 </tbody>
 </table>
@@ -10495,20 +10919,20 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>field</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-references">reference</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Reference to other field.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>bitLength</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">2</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">length in bits</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Serialization length in bits, applicable only to a member of <a href="#fields-bitfield">&lt;bitfield&gt; </a> and when referencing a field that can be a member of <a href="#fields-bitfield">&lt;bitfield&gt; </a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>field</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-references">reference</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reference to other field.</p></td>
 </tr>
 </tbody>
 </table>
@@ -10542,12 +10966,12 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>field</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#fields-fields">field</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>cond</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Wrapped field.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Condition when the field exists.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>defaultMode</strong></p></td>
@@ -10558,14 +10982,6 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default mode of the field. See also <a href="#appendix-optional-default-mode">Default Mode Strings</a> below.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>cond</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Condition when the field exists.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayExtModeCtrl</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
@@ -10574,12 +10990,12 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Disable manual update of the mode in GUI analysis tools.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>missingOnReadFail</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">5</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>field</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#fields-fields">field</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Mark the field as "missing" if its read operation fails.</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wrapped field.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>missingOnInvalid</strong></p></td>
@@ -10588,6 +11004,14 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Mark the field as "missing" if the field&#8217;s value is invalid.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>missingOnReadFail</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">5</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mark the field as "missing" if its read operation fails.</p></td>
 </tr>
 </tbody>
 </table>
@@ -10613,9 +11037,9 @@ child XML element.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;field&gt;</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;and&gt;</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Wraps member field.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Logical "and" of conditions.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;cond&gt;</strong></p></td>
@@ -10623,9 +11047,9 @@ child XML element.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Condition when field exists.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;and&gt;</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;field&gt;</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Logical "and" of conditions.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wraps member field.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;or&gt;</strong></p></td>
@@ -10649,16 +11073,16 @@ child XML element.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">Tentative</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">"tentative", "tent", "t"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">Exist</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">"exist", "exists", "e"</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">Missing</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">"missing", "miss", "m"</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">Exist</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">"exist", "exists", "e"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">Tentative</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">"tentative", "tent", "t"</p></td>
 </tr>
 </tbody>
 </table>
@@ -11097,20 +11521,69 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>construct</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">6</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the message.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Construction requirement.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>id</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>constructAsReadCond</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">bool</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">6</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Copy <strong>construct</strong> value(s) to <strong>readCond</strong>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>constructAsValidCond</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">bool</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">6</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Copy <strong>construct</strong> value(s) to <strong>validCond</strong>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyCodeFrom</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-references">reference</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">5</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Numeric ID of the message.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specify message, overriding or other extra code of which needs to be copied.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyFieldsAliases</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">3</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control copy of the defined <a href="#aliases-aliases">aliases</a> when <strong>copyFieldsFrom</strong> property is used to copy fields from the other <a href="#messages-messages">&lt;message&gt; </a> or <a href="#fields-bundle">&lt;bundle&gt; </a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyFieldsFrom</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-references">reference</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Message or bundle field definition from which fields need to be copied.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>customizable</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mark the message to allow compile time customization regardless of code generator&#8217;s level of customization.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>deprecated</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">max unsigned</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which message was deprecated.<br>
+Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>description</strong></p></td>
@@ -11129,12 +11602,44 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Name of the message to display. If empty, the code generator must use value of property <strong>name</strong> instead.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyFieldsFrom</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-references">reference</a> string</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>failOnInvalid</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">6</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fail <strong>read</strong> operation if any of the fields have invalid value or <strong>validCond</strong> conditions are not true.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>id</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
 <td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Message or bundle field definition from which fields need to be copied.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Numeric ID of the message.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>lengthOverride</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>length</strong> retrieval.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the message.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>nameOverride</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>name</strong> retrieval.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>order</strong></p></td>
@@ -11145,21 +11650,28 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Relative order of the messages with the same <strong>id</strong>.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>sinceVersion</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>readCond</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">6</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which message was introduced.</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Extra read operation condition.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>deprecated</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>readOverride</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">max unsigned</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which message was deprecated.<br>
-Must be greater than value of <strong>sinceVersion</strong>.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>read</strong> operation.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>refreshOverride</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>refresh</strong> operation.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>removed</strong></p></td>
@@ -11178,20 +11690,12 @@ Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Endpoint that sends the message.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>customizable</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>sinceVersion</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Mark the message to allow compile time customization regardless of code generator&#8217;s level of customization.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyFieldsAliases</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">3</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control copy of the defined <a href="#aliases-aliases">aliases</a> when <strong>copyFieldsFrom</strong> property is used to copy fields from the other <a href="#messages-messages">&lt;message&gt; </a> or <a href="#fields-bundle">&lt;bundle&gt; </a>.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which message was introduced.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validateMinLength</strong></p></td>
@@ -11202,14 +11706,6 @@ Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Specify expected minimal serialization length of the message fields.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>readOverride</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>read</strong> operation.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>writeOverride</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
@@ -11218,20 +11714,12 @@ Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>write</strong> operation.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>refreshOverride</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validCond</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">6</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>refresh</strong> operation.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>lengthOverride</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>length</strong> retrieval.</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Extra validity check operation condition.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validOverride</strong></p></td>
@@ -11240,22 +11728,6 @@ Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>valid</strong> retrieval.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>nameOverride</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>name</strong> retrieval.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyCodeFrom</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-references">reference</a> string</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">5</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Specify message, overriding or other extra code of which needs to be copied.</p></td>
 </tr>
 </tbody>
 </table>
@@ -11277,19 +11749,34 @@ Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;fields&gt;</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Wraps member fields.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;alias&gt;</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">3</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Alias names for other member fields. See <a href="#aliases-aliases">Aliases</a> for more info.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;construct&gt;</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">6</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Multiple construction requirements.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;fields&gt;</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wraps member fields.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;readCond&gt;</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">6</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Multiple extra read operation conditions.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;replace&gt;</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">5</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Wraps replacing fields after copying using <strong>copyFieldsFrom</strong> property.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;validCond&gt;</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">6</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Multiple extra validity check operation conditions.</p></td>
 </tr>
 </tbody>
 </table>
@@ -11322,20 +11809,12 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the interface.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>description</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyFieldsAliases</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">3</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Human readable description of the interface.</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control copy of the defined <a href="#aliases-aliases">aliases</a> when <strong>copyFieldsFrom</strong> property is used to copy fields from the other <a href="#interfaces-interfaces">&lt;interface&gt; </a> or <a href="#fields-bundle">&lt;bundle&gt; </a>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyFieldsFrom</strong></p></td>
@@ -11346,12 +11825,20 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Interface or bundle field definition from which fields need to be copied.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyFieldsAliases</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">3</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>description</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control copy of the defined <a href="#aliases-aliases">aliases</a> when <strong>copyFieldsFrom</strong> property is used to copy fields from the other <a href="#interfaces-interfaces">&lt;interface&gt; </a> or <a href="#fields-bundle">&lt;bundle&gt; </a>.</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Human readable description of the interface.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the interface.</p></td>
 </tr>
 </tbody>
 </table>
@@ -11373,14 +11860,19 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyFieldsAliases</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control copy of the defined <a href="#aliases-aliases">aliases</a> when <strong>copyFieldsFrom</strong> property is used to copy fields from the other <a href="#interfaces-interfaces">&lt;interface&gt; </a> or <a href="#fields-bundle">&lt;bundle&gt; </a>.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;fields&gt;</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Wraps member fields.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;alias&gt;</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">3</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Alias names for other member fields. See <a href="#aliases-aliases">Aliases</a> for more info.</p></td>
 </tr>
 </tbody>
 </table>
@@ -11413,14 +11905,6 @@ Introduced in DSL version <strong>3</strong>.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">3</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the alias.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>description</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">3</p></td>
@@ -11435,6 +11919,14 @@ Introduced in DSL version <strong>3</strong>.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
 <td class="tableblock halign-center valign-middle"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Reference to the aliased field, must start with <code>$</code> character.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">3</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the alias.</p></td>
 </tr>
 </tbody>
 </table>
@@ -11467,20 +11959,20 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the frame.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>description</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Human readable description of the frame.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the frame.</p></td>
 </tr>
 </tbody>
 </table>
@@ -11536,14 +12028,6 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the layer.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>description</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
@@ -11558,6 +12042,14 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">yes (except for <a href="#frames-payload">&lt;payload&gt; </a>)</p></td>
 <td class="tableblock halign-center valign-middle"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Wrapped field definition.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the layer.</p></td>
 </tr>
 </tbody>
 </table>
@@ -11717,6 +12209,22 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>checksumFrom</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">5</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no (unless <strong>semanticLayerType</strong> is "checksum" and <strong>checksumUntil</strong> is empty)</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the frame layer, from which the checksum calculation starts. Applicable only when <code>semanticLayerType="checksum"</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>checksumUntil</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">5</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no (unless <strong>semanticLayerType</strong> is "checksum" and <strong>checksumFrom</strong> is empty)</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the frame layer, until (and including) which the checksum calculation is executed. Applicable only when <code>semanticLayerType="checksum"</code>.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong><span class="line-through">idReplacement</span></strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
@@ -11733,22 +12241,6 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">custom</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Specify what other layer <strong>&lt;custom&gt;</strong> one is replacing.</p></td>
 </tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>checksumFrom</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">5</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no (unless <strong>semanticLayerType</strong> is "checksum" and <strong>checksumUntil</strong> is empty)</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the frame layer, from which the checksum calculation starts. Applicable only when <code>semanticLayerType="checksum"</code>.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>checksumUntil</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">5</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no (unless <strong>semanticLayerType</strong> is "checksum" and <strong>checksumFrom</strong> is empty)</p></td>
-<td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the frame layer, until (and including) which the checksum calculation is executed. Applicable only when <code>semanticLayerType="checksum"</code>.</p></td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -11757,8 +12249,8 @@ for detailed description.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 5.0<br>
-Last updated 2022-07-21 13:12:22 +1000
+Version 6.0<br>
+Last updated 2023-03-14 08:04:01 +1000
 </div>
 </div>
 </body>
