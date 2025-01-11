@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.16">
+<meta name="generator" content="Asciidoctor 2.0.20">
 <meta name="author" content="Alex Robenko">
-<title>CommsDSL Specification v6.1</title>
+<title>CommsDSL Specification v7.0</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -85,10 +85,10 @@ code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;
 ul,ol,dl{line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
 ul,ol{margin-left:1.5em}
 ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0}
-ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
-ul.square{list-style-type:square}
 ul.circle{list-style-type:circle}
 ul.disc{list-style-type:disc}
+ul.square{list-style-type:square}
+ul.circle ul:not([class]),ul.disc ul:not([class]),ul.square ul:not([class]){list-style:inherit}
 ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
 dl dt{margin-bottom:.3125em;font-weight:bold}
 dl dd{margin-bottom:1.25em}
@@ -194,7 +194,8 @@ body.toc2.toc-right{padding-left:0;padding-right:20em}}
 #content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
 details,.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
 details{margin-left:1.25rem}
-details>summary{cursor:pointer;display:block;position:relative;line-height:1.6;margin-bottom:.625rem;-webkit-tap-highlight-color:transparent}
+details>summary{cursor:pointer;display:block;position:relative;line-height:1.6;margin-bottom:.625rem;outline:none;-webkit-tap-highlight-color:transparent}
+details>summary::-webkit-details-marker{display:none}
 details>summary::before{content:"";border:solid transparent;border-left:solid;border-width:.3em 0 .3em .5em;position:absolute;top:.5em;left:-1.25rem;transform:translateX(15%)}
 details[open]>summary::before{border:solid transparent;border-top:solid;border-width:.5em .3em 0;transform:translateY(15%)}
 details>summary::after{content:"";width:1.25rem;height:1em;position:absolute;top:.3em;left:-1.25rem}
@@ -208,13 +209,10 @@ table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
 .admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6);word-wrap:anywhere}
 .admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
 .exampleblock>.content{border:1px solid #e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;border-radius:4px}
-.exampleblock>.content>:first-child{margin-top:0}
-.exampleblock>.content>:last-child{margin-bottom:0}
 .sidebarblock{border:1px solid #dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;border-radius:4px}
-.sidebarblock>:first-child{margin-top:0}
-.sidebarblock>:last-child{margin-bottom:0}
 .sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
-.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content>:first-child,.sidebarblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child,.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
 .literalblock pre,.listingblock>.content>pre{border-radius:4px;overflow-x:auto;padding:1em;font-size:.8125em}
 @media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
 @media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
@@ -236,9 +234,8 @@ pre.prettyprint li:not(:first-child) code[data-lang]::before{display:none}
 table.linenotable{border-collapse:separate;border:0;margin-bottom:0;background:none}
 table.linenotable td[class]{color:inherit;vertical-align:top;padding:0;line-height:inherit;white-space:normal}
 table.linenotable td.code{padding-left:.75em}
-table.linenotable td.linenos{border-right:1px solid;opacity:.35;padding-right:.5em}
-pre.pygments .lineno{border-right:1px solid;opacity:.35;display:inline-block;margin-right:.75em}
-pre.pygments .lineno::before{content:"";margin-right:-.125em}
+table.linenotable td.linenos,pre.pygments .linenos{border-right:1px solid;opacity:.35;padding-right:.5em;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+pre.pygments span.linenos{display:inline-block;margin-right:.75em}
 .quoteblock{margin:0 1em 1.25em 1.5em;display:table}
 .quoteblock:not(.excerpt)>.title{margin-left:-1.5em;margin-bottom:.75em}
 .quoteblock blockquote,.quoteblock p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
@@ -275,7 +272,7 @@ table.frame-none>colgroup+*>:first-child>*,table.frame-sides>colgroup+*>:first-c
 table.frame-none>:last-child>:last-child>*,table.frame-sides>:last-child>:last-child>*{border-bottom-width:0}
 table.frame-none>*>tr>:first-child,table.frame-ends>*>tr>:first-child{border-left-width:0}
 table.frame-none>*>tr>:last-child,table.frame-ends>*>tr>:last-child{border-right-width:0}
-table.stripes-all tr,table.stripes-odd tr:nth-of-type(odd),table.stripes-even tr:nth-of-type(even),table.stripes-hover tr:hover{background:#f8f8f7}
+table.stripes-all>*>tr,table.stripes-odd>*>tr:nth-of-type(odd),table.stripes-even>*>tr:nth-of-type(even),table.stripes-hover>*>tr:hover{background:#f8f8f7}
 th.halign-left,td.halign-left{text-align:left}
 th.halign-right,td.halign-right{text-align:right}
 th.halign-center,td.halign-center{text-align:center}
@@ -291,10 +288,11 @@ ol{margin-left:1.75em}
 ul li ol{margin-left:1.5em}
 dl dd{margin-left:1.125em}
 dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
-ol>li p,ul>li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
 ul.checklist,ul.none,ol.none,ul.no-bullet,ol.no-bullet,ol.unnumbered,ul.unstyled,ol.unstyled{list-style-type:none}
 ul.no-bullet,ol.no-bullet,ol.unnumbered{margin-left:.625em}
 ul.unstyled,ol.unstyled{margin-left:0}
+li>p:empty:only-child::before{content:"";display:inline-block}
 ul.checklist>li>p:first-child{margin-left:-1em}
 ul.checklist>li>p:first-child>.fa-square-o:first-child,ul.checklist>li>p:first-child>.fa-check-square-o:first-child{width:1.25em;font-size:.8em;position:relative;bottom:.125em}
 ul.checklist>li>p:first-child>input[type=checkbox]:first-child{margin-right:.25em}
@@ -337,8 +335,6 @@ sup.footnote a:active,sup.footnoteref a:active{text-decoration:underline}
 #footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none;margin-left:-1.05em}
 #footnotes .footnote:last-of-type{margin-bottom:0}
 #content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
-.gist .file-data>table{border:0;background:#fff;width:100%;margin-bottom:0}
-.gist .file-data>table td.line-data{width:99%}
 div.unbreakable{page-break-inside:avoid}
 .big{font-size:larger}
 .small{font-size:smaller}
@@ -395,7 +391,7 @@ b.conum *{color:inherit!important}
 dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
 h1,h2,p,td.content,span.alt,summary{letter-spacing:-.01em}
 p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
-p,blockquote,dt,td.content,span.alt,summary{font-size:1.0625rem}
+p,blockquote,dt,td.content,td.hdlist1,span.alt,summary{font-size:1.0625rem}
 p{margin-bottom:1.25rem}
 .sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
 .exampleblock>.content{background:#fffef7;border-color:#e0e0dc;box-shadow:0 1px 4px #e0e0dc}
@@ -440,226 +436,125 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <style>
 pre.rouge table td { padding: 5px; }
 pre.rouge table pre { margin: 0; }
-pre.rouge .cm {
-  color: #999988;
-  font-style: italic;
+pre.rouge, pre.rouge .w {
+  color: #24292f;
+  background-color: #f6f8fa;
 }
-pre.rouge .cp {
-  color: #999999;
-  font-weight: bold;
-}
-pre.rouge .c1 {
-  color: #999988;
-  font-style: italic;
-}
-pre.rouge .cs {
-  color: #999999;
-  font-weight: bold;
-  font-style: italic;
-}
-pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cpf {
-  color: #999988;
-  font-style: italic;
-}
-pre.rouge .err {
-  color: #a61717;
-  background-color: #e3d2d2;
-}
-pre.rouge .gd {
-  color: #000000;
-  background-color: #ffdddd;
-}
-pre.rouge .ge {
-  color: #000000;
-  font-style: italic;
+pre.rouge .k, pre.rouge .kd, pre.rouge .kn, pre.rouge .kp, pre.rouge .kr, pre.rouge .kt, pre.rouge .kv {
+  color: #cf222e;
 }
 pre.rouge .gr {
-  color: #aa0000;
+  color: #f6f8fa;
 }
-pre.rouge .gh {
-  color: #999999;
+pre.rouge .gd {
+  color: #82071e;
+  background-color: #ffebe9;
+}
+pre.rouge .nb {
+  color: #953800;
+}
+pre.rouge .nc {
+  color: #953800;
+}
+pre.rouge .no {
+  color: #953800;
+}
+pre.rouge .nn {
+  color: #953800;
+}
+pre.rouge .sr {
+  color: #116329;
+}
+pre.rouge .na {
+  color: #116329;
+}
+pre.rouge .nt {
+  color: #116329;
 }
 pre.rouge .gi {
-  color: #000000;
-  background-color: #ddffdd;
+  color: #116329;
+  background-color: #dafbe1;
 }
-pre.rouge .go {
-  color: #888888;
+pre.rouge .kc {
+  color: #0550ae;
 }
-pre.rouge .gp {
-  color: #555555;
+pre.rouge .l, pre.rouge .ld, pre.rouge .m, pre.rouge .mb, pre.rouge .mf, pre.rouge .mh, pre.rouge .mi, pre.rouge .il, pre.rouge .mo, pre.rouge .mx {
+  color: #0550ae;
 }
-pre.rouge .gs {
+pre.rouge .sb {
+  color: #0550ae;
+}
+pre.rouge .bp {
+  color: #0550ae;
+}
+pre.rouge .ne {
+  color: #0550ae;
+}
+pre.rouge .nl {
+  color: #0550ae;
+}
+pre.rouge .py {
+  color: #0550ae;
+}
+pre.rouge .nv, pre.rouge .vc, pre.rouge .vg, pre.rouge .vi, pre.rouge .vm {
+  color: #0550ae;
+}
+pre.rouge .o, pre.rouge .ow {
+  color: #0550ae;
+}
+pre.rouge .gh {
+  color: #0550ae;
   font-weight: bold;
 }
 pre.rouge .gu {
-  color: #aaaaaa;
-}
-pre.rouge .gt {
-  color: #aa0000;
-}
-pre.rouge .kc {
-  color: #000000;
+  color: #0550ae;
   font-weight: bold;
 }
-pre.rouge .kd {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .kn {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .kp {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .kr {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .kt {
-  color: #445588;
-  font-weight: bold;
-}
-pre.rouge .k, pre.rouge .kv {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .mf {
-  color: #009999;
-}
-pre.rouge .mh {
-  color: #009999;
-}
-pre.rouge .il {
-  color: #009999;
-}
-pre.rouge .mi {
-  color: #009999;
-}
-pre.rouge .mo {
-  color: #009999;
-}
-pre.rouge .m, pre.rouge .mb, pre.rouge .mx {
-  color: #009999;
-}
-pre.rouge .sa {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .sb {
-  color: #d14;
-}
-pre.rouge .sc {
-  color: #d14;
-}
-pre.rouge .sd {
-  color: #d14;
-}
-pre.rouge .s2 {
-  color: #d14;
-}
-pre.rouge .se {
-  color: #d14;
-}
-pre.rouge .sh {
-  color: #d14;
-}
-pre.rouge .si {
-  color: #d14;
-}
-pre.rouge .sx {
-  color: #d14;
-}
-pre.rouge .sr {
-  color: #009926;
-}
-pre.rouge .s1 {
-  color: #d14;
-}
-pre.rouge .ss {
-  color: #990073;
-}
-pre.rouge .s, pre.rouge .dl {
-  color: #d14;
-}
-pre.rouge .na {
-  color: #008080;
-}
-pre.rouge .bp {
-  color: #999999;
-}
-pre.rouge .nb {
-  color: #0086B3;
-}
-pre.rouge .nc {
-  color: #445588;
-  font-weight: bold;
-}
-pre.rouge .no {
-  color: #008080;
+pre.rouge .s, pre.rouge .sa, pre.rouge .sc, pre.rouge .dl, pre.rouge .sd, pre.rouge .s2, pre.rouge .se, pre.rouge .sh, pre.rouge .sx, pre.rouge .s1, pre.rouge .ss {
+  color: #0a3069;
 }
 pre.rouge .nd {
-  color: #3c5d5d;
-  font-weight: bold;
-}
-pre.rouge .ni {
-  color: #800080;
-}
-pre.rouge .ne {
-  color: #990000;
-  font-weight: bold;
+  color: #8250df;
 }
 pre.rouge .nf, pre.rouge .fm {
-  color: #990000;
+  color: #8250df;
+}
+pre.rouge .err {
+  color: #f6f8fa;
+  background-color: #82071e;
+}
+pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cm, pre.rouge .cp, pre.rouge .cpf, pre.rouge .c1, pre.rouge .cs {
+  color: #6e7781;
+}
+pre.rouge .gl {
+  color: #6e7781;
+}
+pre.rouge .gt {
+  color: #6e7781;
+}
+pre.rouge .ni {
+  color: #24292f;
+}
+pre.rouge .si {
+  color: #24292f;
+}
+pre.rouge .ge {
+  color: #24292f;
+  font-style: italic;
+}
+pre.rouge .gs {
+  color: #24292f;
   font-weight: bold;
-}
-pre.rouge .nl {
-  color: #990000;
-  font-weight: bold;
-}
-pre.rouge .nn {
-  color: #555555;
-}
-pre.rouge .nt {
-  color: #000080;
-}
-pre.rouge .vc {
-  color: #008080;
-}
-pre.rouge .vg {
-  color: #008080;
-}
-pre.rouge .vi {
-  color: #008080;
-}
-pre.rouge .nv, pre.rouge .vm {
-  color: #008080;
-}
-pre.rouge .ow {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .o {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .w {
-  color: #bbbbbb;
-}
-pre.rouge {
-  background-color: #f8f8f8;
 }
 </style>
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>CommsDSL Specification v6.1</h1>
+<h1>CommsDSL Specification v7.0</h1>
 <div class="details">
 <span id="author" class="author">Alex Robenko</span><br>
-<span id="revnumber">version 6.1,</span>
-<span id="revdate">2023-06</span>
+<span id="revnumber">version 7.0,</span>
+<span id="revdate">2025-01</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -693,6 +588,7 @@ pre.rouge {
 <li><a href="#fields-fields">Fields</a>
 <ul class="sectlevel2">
 <li><a href="#fields-common">Common Properties of Fields</a></li>
+<li><a href="#fields-common-length-validation">Field Length Validation</a></li>
 <li><a href="#fields-enum">&lt;enum&gt; Field</a></li>
 <li><a href="#fields-int">&lt;int&gt; Field</a></li>
 <li><a href="#fields-set">&lt;set&gt; Field</a></li>
@@ -728,28 +624,29 @@ pre.rouge {
 <li><a href="#messages-read-conditions">Extra Read Conditions</a></li>
 <li><a href="#messages-valid-conditions">Extra Validity Conditions</a></li>
 <li><a href="#messages-fail-read-on-invalid">Failing Read on Invalid Contents</a></li>
+<li><a href="#messages-reusing-other-messages">Reusing Other Messages</a></li>
 </ul>
 </li>
 <li><a href="#interfaces-interfaces">Interfaces</a>
 <ul class="sectlevel2">
-<li><a href="#_interface_name">Interface Name</a></li>
-<li><a href="#_description">Description</a></li>
-<li><a href="#_more_about_fields">More About Fields</a></li>
-<li><a href="#_alias_names_to_fields">Alias Names to Fields</a></li>
+<li><a href="#interfaces-name">Interface Name</a></li>
+<li><a href="#interfaces-description">Description</a></li>
+<li><a href="#interfaces-fields">More About Fields</a></li>
+<li><a href="#interfaces-alias-names">Alias Names to Fields</a></li>
+<li><a href="#interfaces-reusing-other-fields">Reusing Other Interfaces</a></li>
 </ul>
 </li>
 <li><a href="#aliases-aliases">Aliases</a>
 <ul class="sectlevel2">
-<li><a href="#_description_2">Description</a></li>
-<li><a href="#_more_on_aliases_in_message_es">More on Aliases in &lt;message&gt;-es</a></li>
-<li><a href="#_more_on_aliases_in_interface_es">More on Aliases in &lt;interface&gt;-es</a></li>
-<li><a href="#_more_on_aliases_in_bundle_es">More on Aliases in &lt;bundle&gt;-es</a></li>
+<li><a href="#aliases-description">Description</a></li>
+<li><a href="#aliases-reuse">Reusing Definition</a></li>
+<li><a href="#aliases-copy">Copying Fields</a></li>
 </ul>
 </li>
 <li><a href="#frames-frames">Frames</a>
 <ul class="sectlevel2">
 <li><a href="#_name">Name</a></li>
-<li><a href="#_description_3">Description</a></li>
+<li><a href="#_description">Description</a></li>
 <li><a href="#_layers">Layers</a></li>
 <li><a href="#frames-common">Common Properties of Layers</a></li>
 <li><a href="#frames-payload">&lt;payload&gt; Layer</a></li>
@@ -1023,7 +920,10 @@ interfaces.</p>
 <div class="paragraph">
 <p>For big protocols it is possible and even recommended to split schema definition
 into multiple files. The code generator <strong>must</strong> accept a list of schema files to
-process and <strong>must</strong> process them in the requested order.</p>
+process and <strong>must</strong> process them in the requested order. Note there are no
+<strong>include</strong> (or similar) statements in the <strong>CommsDSL</strong> specification. The
+code generator is expected to process the listed DSL files in the provided order
+and being able to reuse any definition that has already been encountered.</p>
 </div>
 <div class="paragraph">
 <p>Every subsequently processed schema file must <strong>NOT</strong> change any properties of the
@@ -1400,7 +1300,7 @@ prefixing the reference string with <code>@</code> and schema name:</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="intro-references-to-siblings">References to Sibling Elements</h4>
+<h4 id="intro-references-to-siblings">References to Sibling or Member Elements</h4>
 <div class="paragraph">
 <p>In case of using <a href="#fields-optional">&lt;optional&gt; </a> field <a href="#fields-optional-existence-conditions">conditions</a> the
 referenced fields are not global ones, but a siblings. Such sibling reference needs to be prefixed with <code>$</code> character.</p>
@@ -1416,6 +1316,21 @@ referenced fields are not global ones, but a siblings. Such sibling reference ne
         <span class="nt">&lt;optional</span> <span class="na">name=</span><span class="s">"Val1"</span> <span class="na">defaultMode=</span><span class="s">"missing"</span> <span class="na">cond=</span><span class="s">"$Flags.Val1Exists"</span><span class="nt">&gt;</span>
             <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"ActVal1"</span> <span class="na">type=</span><span class="s">"uint32"</span> <span class="nt">/&gt;</span>
         <span class="nt">&lt;/optional&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In case of the <a href="#messages-messages">&lt;message&gt;-s</a> or composite fields like
+<a href="#fields-bundle">&lt;bundle&gt; </a> the <code>$</code> is used to reference their member fields.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="na">id=</span><span class="s">"1"</span> <span class="na">validCond=</span><span class="s">"$F1 != $F2"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"F1"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"F2"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="nt">/&gt;</span>
     <span class="nt">&lt;/fields&gt;</span>
 <span class="nt">&lt;/schema&gt;</span></code></pre>
 </div>
@@ -1782,7 +1697,7 @@ property or other construct.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;schema</span> <span class="na">name=</span><span class="s">"MyProtocol"</span> <span class="na">dslVersion=</span><span class="s">"5"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;schema</span> <span class="na">name=</span><span class="s">"MyProtocol"</span> <span class="na">dslVersion=</span><span class="s">"7"</span><span class="nt">&gt;</span>
     ...
 <span class="nt">&lt;/schema&gt;</span></code></pre>
 </div>
@@ -2029,13 +1944,7 @@ has been introduced with <a href="#intro-boolean">boolean</a> value.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="fields-common-display-properties">Display Properties</h4>
-<div class="paragraph">
-<p><strong>CommsDSL</strong> supports generation of not only field&#8217;s serialization and
-value access functionality, but also of various GUI protocol visualization, debugging and
-analysis tools. There are some allowed properties, that indicate how the
-field is expected to be displayed by such tools.</p>
-</div>
+<h4 id="fields-common-display-properties">Display Name</h4>
 <div class="paragraph">
 <p>The <strong>displayName</strong> property is there to specify proper string of the field&#8217;s
 name, with spaces, dots and other characters that are not allowed to exist in
@@ -2061,38 +1970,6 @@ the <a href="#intro-names">name</a>.</p>
 <span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
     <span class="nt">&lt;fields&gt;</span>
         <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"SomeIntField"</span> <span class="na">displayName=</span><span class="s">"_"</span> <span class="err">...</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;/fields&gt;</span>
-<span class="nt">&lt;/schema&gt;</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Sometimes the values of some fields may be controlled by other fields. In this case, it
-could be wise to disable manual update of such fields. To enable/disable such
-behavior use <strong>displayReadOnly</strong> property with <a href="#intro-boolean">boolean</a>
-value.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;fields&gt;</span>
-        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"SomeIntField"</span> <span class="na">displayReadOnly=</span><span class="s">"true"</span> <span class="err">...</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;/fields&gt;</span>
-<span class="nt">&lt;/schema&gt;</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Also sometimes it can be desirable to completely hide some field
-from being displayed in the protocol analysis GUI application. In this case
-use <strong>displayHidden</strong> property with <a href="#intro-boolean">boolean</a>
-value.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;fields&gt;</span>
-        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"SomeIntField"</span> <span class="na">displayHidden=</span><span class="s">"true"</span> <span class="err">...</span> <span class="nt">/&gt;</span>
     <span class="nt">&lt;/fields&gt;</span>
 <span class="nt">&lt;/schema&gt;</span></code></pre>
 </div>
@@ -2224,6 +2101,28 @@ value.</p>
 </div>
 </div>
 <div class="sect3">
+<h4 id="fields-common-fixed-value-fields">Fixed Value (Constant) Fields</h4>
+<div class="paragraph">
+<p>It is possible to disallow modification of the field&#8217;s value by the client application
+using <strong>fixedValue</strong> property with <a href="#intro-boolean">boolean</a> value.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="na">name=</span><span class="s">"MyProtocol"</span> <span class="na">endian=</span><span class="s">"big"</span> <span class="na">version=</span><span class="s">"5"</span> <span class="nt">&gt;</span>
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"SomeMessage"</span> <span class="na">id=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"MessageVersion"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">defaultValue=</span><span class="s">"1"</span> <span class="na">fixedValue=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+        ...
+    <span class="nt">&lt;/message&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the example above the code generator must remove an ability to explicitly modify the field&#8217;s value
+after its construction. The field&#8217;s value can still be updated by the <strong>read</strong> operation though.</p>
+</div>
+</div>
+<div class="sect3">
 <h4 id="fields-common-customizable-fields">Customizable Fields</h4>
 <div class="paragraph">
 <p>The code generator is expected to allow some level of compile time customization of the
@@ -2301,9 +2200,9 @@ an <a href="#fields-int">&lt;int&gt; </a>).</p>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>length</strong> - Introduced in <strong>v2.0</strong> of <strong>CommsDSL</strong> specification.
-Used to specify that the field holds total serialization length
-of the <strong>subsequent</strong> fields. Usually applicable to <a href="#fields-int">&lt;int&gt; </a> field
+<p><strong>length</strong> - Used to specify that the field holds total serialization length
+of the <strong>subsequent</strong> fields (excluding the length of the field itself).
+Usually applicable to <a href="#fields-int">&lt;int&gt; </a> field
 (or  <a href="#fields-ref">&lt;ref&gt; </a> referencing an <a href="#fields-int">&lt;int&gt; </a>).
 Since <strong>v5.0</strong> of <strong>CommsDSL</strong>, the <strong>length</strong> semantic type can be set for other
 complex fields, such as <a href="#fields-bundle">&lt;bundle&gt; </a> or <a href="#fields-bitfield">&lt;bitfield&gt; </a>.
@@ -2471,7 +2370,7 @@ It means that some portion of copied code can be cleared.</p>
 <p>In case of <a href="#fields-common-reusing-other-fields">reusing</a> other field definition, only the field
 definition properties are copied. The extra code that the original field might inject is <strong>NOT</strong> included
 in such copy by default. The copying of injected code must be specified explicitly using
-<strong>copyCodeFrom</strong> property descirbed above, or to avoid repetition of the
+<strong>copyCodeFrom</strong> property described above, or to avoid repetition of the
 <a href="#intro-references">reference</a> string, another <strong>reuseCode</strong> property with
 boolean value can be used in addition to <strong>reuse</strong> one.</p>
 </div>
@@ -2498,9 +2397,44 @@ boolean value can be used in addition to <strong>reuse</strong> one.</p>
 <span class="nt">&lt;/schema&gt;</span></code></pre>
 </div>
 </div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="fields-common-length-validation">Field Length Validation</h3>
+<div class="paragraph">
+<p>Many protocol specifications provide expected serialization length of the message or selected fields. In order to
+prevent various typos or copy-paste errors, the <strong>CommsDSL</strong> provides an ability to
+validate the specified field (minimal) length during the schema file parsing. It can be quite useful for the
+composite fields like <a href="#fields-bundle">&lt;bundle&gt; </a>. To perform such a
+check use <strong>validateMinLength</strong> <a href="#intro-properties">property</a> with <a href="#intro-numeric">unsigned</a> value.
+It can help to avoid some copy-paste or typo errors
+at the time of schema parsing rather than debugging generated incorrect code.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="na">name=</span><span class="s">"MyProtocol"</span> <span class="na">endian=</span><span class="s">"big"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;bundle</span> <span class="na">name=</span><span class="s">"SomeBundle"</span> <span class="na">validateMinLength=</span><span class="s">"4"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"SomeIntMember"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;set</span> <span class="na">name=</span><span class="s">"SomeSetMember"</span> <span class="na">length=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+                ...
+            <span class="nt">&lt;/set&gt;</span>
+            <span class="nt">&lt;enum</span> <span class="na">name=</span><span class="s">"SomeEnumMember"</span> <span class="na">type=</span><span class="s">"uint8"</span><span class="nt">&gt;</span>
+                ...
+            <span class="nt">&lt;/enum&gt;</span>
+            <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">"SomeString"</span> <span class="na">validateMinLength=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;lengthPrefix&gt;</span>
+                    <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Length"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;/lengthPrefix&gt;</span>
+            <span class="nt">&lt;/string&gt;</span>
+        <span class="nt">&lt;/bundle&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
 <div class="paragraph">
 <p>Use <a href="#appendix-fields">properties table</a> for future references.</p>
-</div>
 </div>
 </div>
 <div class="sect2">
@@ -2607,7 +2541,7 @@ in any order, not necessarily sorted.</p>
 <p><strong>description</strong> - Extra description and documentation on how to use the value.</p>
 </li>
 <li>
-<p><strong>displayName</strong> - String specifying how to name the value in various analysis tools.</p>
+<p><strong>displayName</strong> - Human readable name of the value.</p>
 </li>
 <li>
 <p><strong>sinceVersion</strong> - Version of the protocol when the value was introduced.</p>
@@ -2992,7 +2926,7 @@ in any order, not necessarily sorted.</p>
 <p><strong>deprecated</strong> - Version of the protocol when the special name / meaning was deprecated.</p>
 </li>
 <li>
-<p><strong>displayName</strong> - Readable name to display for the special value in protocol debugging and visualization tools.</p>
+<p><strong>displayName</strong> - Human readable name of the value.</p>
 </li>
 </ul>
 </div>
@@ -3480,9 +3414,8 @@ is set to <strong>true</strong>.</p>
 <div class="sect3">
 <h4 id="fields-int-extra-display-properties">Extra Display Properties</h4>
 <div class="paragraph">
-<p>When <a href="#fields-int-scaling">scaling</a> information is specified, it is possible to notify
-GUI analysis tools that value of <strong>&lt;int&gt;</strong> field should be displayed as
-scaled floating point number. To do so, use <strong>displayDecimals</strong> <a href="#intro-properties">property</a>
+<p>When <a href="#fields-int-scaling">scaling</a> information is specified and the field&#8217;s value needs to be displayed
+somewhere as a floating point one, use <strong>displayDecimals</strong> <a href="#intro-properties">property</a>
 with numeric value of how many digits need to be displayed after decimal point.</p>
 </div>
 <div class="listingblock">
@@ -3496,8 +3429,9 @@ with numeric value of how many digits need to be displayed after decimal point.<
 </div>
 </div>
 <div class="paragraph">
-<p>Also when <a href="#fields-int-serialization-offset">serialization offset</a> is provided, sometimes
-it may be desirable to display the value in the GUI analysis tool(s) with such offset.</p>
+<p>Also when <a href="#fields-int-serialization-offset">serialization offset</a> is provided it can
+be added to the displayed value by using the <strong>displayOffset</strong> <a href="#intro-properties">property</a> with
+<a href="#intro-numeric">numeric</a> value.</p>
 </div>
 <div class="paragraph">
 <p>For example, many protocols define some kind of remaining length field
@@ -3523,10 +3457,8 @@ this length is. Such field can be defined like this:</p>
 <strong>excluding</strong> the length of itself, but adding it when value is serialized.</p>
 </div>
 <div class="paragraph">
-<p>However, when such field is displayed in GUI analysis tool(s), it is desirable
-to display the value with serialization offset as well. It can be achieved using
-<strong>displayOffset</strong> <a href="#intro-properties">property</a> with
-<a href="#intro-numeric">numeric</a> value.</p>
+<p>However, when such field is displayed it is desirable
+to display the value with serialization offset as well.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3534,25 +3466,6 @@ to display the value with serialization offset as well. It can be achieved using
 <span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
     <span class="nt">&lt;fields&gt;</span>
         <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"RemLength"</span> <span class="na">type=</span><span class="s">"uint16"</span> <span class="na">serOffset=</span><span class="s">"2"</span> <span class="na">displayOffset=</span><span class="s">"2"</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;/fields&gt;</span>
-<span class="nt">&lt;/schema&gt;</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>When <strong>&lt;special&gt;</strong> values are specified the protocol analysis tools are
-expected to display them next to actual numeric value of the field. The <strong>displaySpecials</strong>
-<a href="#intro-properties">property</a> with <a href="#intro-boolean">boolean</a> value
-is there to control this default behavior.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;fields&gt;</span>
-        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"SomeInt"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">displaySpecials=</span><span class="s">"false"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;special</span> <span class="na">name=</span><span class="s">"S1"</span> <span class="na">val=</span><span class="s">"0"</span> <span class="nt">/&gt;</span>
-            <span class="nt">&lt;special</span> <span class="na">name=</span><span class="s">"S2"</span> <span class="na">val=</span><span class="s">"2"</span> <span class="nt">/&gt;</span>
-        <span class="nt">&lt;/int&gt;</span>
     <span class="nt">&lt;/fields&gt;</span>
 <span class="nt">&lt;/schema&gt;</span></code></pre>
 </div>
@@ -3720,7 +3633,7 @@ listed below for better readability:</p>
 <p><strong>description</strong> - Extra description and documentation on the bit.</p>
 </li>
 <li>
-<p><strong>displayName</strong> - String specifying how to name the bit in various analysis tools.</p>
+<p><strong>displayName</strong> - Human readable name of the bit.</p>
 </li>
 </ul>
 </div>
@@ -4113,6 +4026,103 @@ in the following way.</p>
 <span class="nt">&lt;/schema&gt;</span></code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="fields-bitfield-valid-conditions">Extra Validity Conditions</h4>
+<div class="paragraph">
+<p>The <strong>valid</strong> operation of every <a href="#fields-bitfield">&lt;bitfield&gt; </a> means invoking
+the <strong>valid</strong> operation for every one of its member fields. However, the valid values
+of fields may be interdependent. There may be a need to introduce extra validity checks
+on the &lt;bitfield&gt; contents. To do so the <strong>validCond</strong> property referencing appropriate
+member fields of the <a href="#fields-bitfield">&lt;bitfield&gt; </a> itself can be used. The syntax is
+the same as with the <a href="#fields-optional">&lt;optional&gt; </a> field&#8217;s
+<a href="#fields-optional-existence-conditions">existence conditions</a> (described later).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"SomeBitfield"</span> <span class="na">validCond=</span><span class="s">"$Mem1 != $Mem2"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem1"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem2"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/bitfield&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In case of multiple conditions the <strong>validCond</strong> needs to be specified
+as the <code>&lt;validCond&gt;</code> child node with a single <code>&lt;and&gt;</code> or <code>&lt;or&gt;</code> immediate child.
+Nested <code>&lt;and&gt;</code> and/or <code>&lt;or&gt;</code> conditions are allowed in the same way as with the
+<a href="#fields-optional">&lt;optional&gt; </a> field&#8217;s <a href="#fields-optional-existence-conditions">existence conditions</a>.
+The only difference is that the inner child nodes must be named <code>validCond</code> instead of <code>cond</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"SomeBitfield"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;members&gt;</span>
+                <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem1"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem2"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/members&gt;</span>
+            <span class="nt">&lt;validCond&gt;</span>
+                <span class="nt">&lt;or&gt;</span>
+                    <span class="nt">&lt;validCond</span> <span class="na">value=</span><span class="s">"$Mem1 = 0"</span> <span class="nt">/&gt;</span>
+                    <span class="nt">&lt;validCond</span> <span class="na">value=</span><span class="s">"$Mem2 != 0"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;/or&gt;</span>
+            <span class="nt">&lt;/validCond&gt;</span>
+        <span class="nt">&lt;/bitfield&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In case some other <a href="#fields-bitfield">&lt;bitfield&gt; </a> have similar fields and the same extra validity conditions apply to
+the <a href="#fields-bitfield">&lt;bitfield&gt; </a> field being defined, it is possible to copy the conditions using <strong>copyValidCondFrom</strong>
+property.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"SomeBitfield"</span> <span class="na">validCond=</span><span class="s">"$Mem1 != $Mem2"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem1"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem2"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/bitfield&gt;</span>
+
+        <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"SomeOtherBitfield"</span> <span class="na">copyValidCondFrom=</span><span class="s">"SomeBitfield"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem3"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem1"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"6"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem2"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"6"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/bitfield&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Note</strong> that <strong>copyValidCondFrom</strong> is an <em>action</em> property, which causes the copy
+of the original validity conditions. When such field is <a href="#fields-common-reusing-other-fields">reused</a>
+in the future the original definition doesn&#8217;t really have property named <strong>copyValidCondFrom</strong> to be
+copied, only the real validity condition(s). The <code>SomeOtherBitfield</code> definition above is equivalent to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"SomeOtherBitfield"</span> <span class="na">validCond=</span><span class="s">"$Mem1 != $Mem2"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem3"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem1"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"6"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem2"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"6"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/bitfield&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
 <div class="paragraph">
 <p>Use <a href="#appendix-bitfield">properties table</a> for future references.</p>
 </div>
@@ -4309,6 +4319,103 @@ in the following way.</p>
 create alias names for the fields to keep the old client code being able to compile
 and work. Please refer to <a href="#aliases-aliases">Aliases</a> chapter for more details.</p>
 </div>
+</div>
+<div class="sect3">
+<h4 id="fields-bundle-valid-conditions">Extra Validity Conditions</h4>
+<div class="paragraph">
+<p>The <strong>valid</strong> operation of every <a href="#fields-bundle">&lt;bundle&gt; </a> means invoking
+the <strong>valid</strong> operation for every one of its member fields. However, the valid values
+of fields may be interdependent. There may be a need to introduce extra validity checks
+on the &lt;bundle&gt; contents. To do so the <strong>validCond</strong> property referencing appropriate
+member fields of the <a href="#fields-bundle">&lt;bundle&gt; </a> itself can be used. The syntax is
+the same as with the <a href="#fields-optional">&lt;optional&gt; </a> field&#8217;s
+<a href="#fields-optional-existence-conditions">existence conditions</a> (described later).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;bundle</span> <span class="na">name=</span><span class="s">"SomeBundle"</span> <span class="na">validCond=</span><span class="s">"$Mem1 != $Mem2"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem1"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem2"</span> <span class="na">type=</span><span class="s">"uint16"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/bundle&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In case of multiple conditions the <strong>validCond</strong> needs to be specified
+as the <code>&lt;validCond&gt;</code> child node with a single <code>&lt;and&gt;</code> or <code>&lt;or&gt;</code> immediate child.
+Nested <code>&lt;and&gt;</code> and/or <code>&lt;or&gt;</code> conditions are allowed in the same way as with the
+<a href="#fields-optional">&lt;optional&gt; </a> field&#8217;s <a href="#fields-optional-existence-conditions">existence conditions</a>.
+The only difference is that the inner child nodes must be named <code>validCond</code> instead of <code>cond</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;bundle</span> <span class="na">name=</span><span class="s">"SomeBundle"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;members&gt;</span>
+                <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem1"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem2"</span> <span class="na">type=</span><span class="s">"uint16"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/members&gt;</span>
+            <span class="nt">&lt;validCond&gt;</span>
+                <span class="nt">&lt;or&gt;</span>
+                    <span class="nt">&lt;validCond</span> <span class="na">value=</span><span class="s">"$Mem1 = 0"</span> <span class="nt">/&gt;</span>
+                    <span class="nt">&lt;validCond</span> <span class="na">value=</span><span class="s">"$Mem2 != 0"</span> <span class="nt">/&gt;</span>
+                <span class="nt">&lt;/or&gt;</span>
+            <span class="nt">&lt;/validCond&gt;</span>
+        <span class="nt">&lt;/bundle&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In case some other <a href="#fields-bundle">&lt;bundle&gt; </a> have similar fields and the same extra validity conditions apply to
+the <a href="#fields-bundle">&lt;bundle&gt; </a> field being defined, it is possible to copy the conditions using <strong>copyValidCondFrom</strong>
+property.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;bundle</span> <span class="na">name=</span><span class="s">"SomeBundle"</span> <span class="na">validCond=</span><span class="s">"$Mem1 != $Mem2"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem1"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem2"</span> <span class="na">type=</span><span class="s">"uint16"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/bundle&gt;</span>
+
+        <span class="nt">&lt;bundle</span> <span class="na">name=</span><span class="s">"SomeOtherBundle"</span> <span class="na">copyValidCondFrom=</span><span class="s">"SomeBundle"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem3"</span> <span class="na">type=</span><span class="s">"uint32"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem1"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem2"</span> <span class="na">type=</span><span class="s">"uint16"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/bundle&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Note</strong> that <strong>copyValidCondFrom</strong> is an <em>action</em> property, which causes the copy
+of the original validity conditions. When such field is <a href="#fields-common-reusing-other-fields">reused</a>
+in the future the original definition doesn&#8217;t really have property named <strong>copyValidCondFrom</strong> to be
+copied, only the real validity condition(s). The <code>SomeOtherBundle</code> definition above is equivalent to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;bundle</span> <span class="na">name=</span><span class="s">"SomeOtherBundle"</span> <span class="na">validCond=</span><span class="s">"$Mem1 != $Mem2"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem3"</span> <span class="na">type=</span><span class="s">"uint32"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem1"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Mem2"</span> <span class="na">type=</span><span class="s">"uint16"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/bundle&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
 <div class="paragraph">
 <p>Use <a href="#appendix-bundle">properties table</a> for future references.</p>
 </div>
@@ -4340,7 +4447,7 @@ other means. It does NOT necessarily mean that all the bytes received from the I
 will be consumed.</p>
 </div>
 <div class="sect3">
-<h4 id="_default_value_2">Default Value</h4>
+<h4 id="fields-string-default-value">Default Value</h4>
 <div class="paragraph">
 <p>The default value of the <strong>&lt;string&gt;</strong> field when constructed can be specified
 using <strong>defaultValue</strong> <a href="#intro-properties">property</a>. If not specified, defaults to empty string.</p>
@@ -4357,7 +4464,7 @@ using <strong>defaultValue</strong> <a href="#intro-properties">property</a>. If
 </div>
 </div>
 <div class="sect3">
-<h4 id="_fixed_length">Fixed Length</h4>
+<h4 id="fields-string-fixed-length">Fixed Length</h4>
 <div class="paragraph">
 <p>In case the string value needs to be serialized using predefined fixed length,
 use <strong>length</strong> property to specify the required value.</p>
@@ -4374,7 +4481,7 @@ use <strong>length</strong> property to specify the required value.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_length_prefix">Length Prefix</h4>
+<h4 id="fields-string-length-prefix">Length Prefix</h4>
 <div class="paragraph">
 <p>Many protocols prefix string with its length. The <strong>CommsDSL</strong> allows definition
 of such prefix using <strong>lengthPrefix</strong> child element, which must define prefix as
@@ -4448,7 +4555,7 @@ into account and generate correct code for various field operations
 </div>
 </div>
 <div class="sect3">
-<h4 id="_zero_termination_suffix">Zero Termination Suffix</h4>
+<h4 id="fields-string-zero-term-suffix">Zero Termination Suffix</h4>
 <div class="paragraph">
 <p>Some protocols may terminate strings with <strong>0</strong> (zero) byte. The <strong>CommsDSL</strong>
 support such cases with existence of <strong>zeroTermSuffix</strong> <a href="#intro-properties">property</a>
@@ -4467,6 +4574,114 @@ with <a href="#intro-boolean">boolean</a> value.</p>
 <div class="paragraph">
 <p><strong>NOTE</strong>, that <strong>length</strong>, <strong>lengthPrefix</strong> and <strong>zeroTermSuffix</strong> properties
 are mutually exclusive, i.e. cannot be used together.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="fields-string-valid-values">Valid Values</h4>
+<div class="paragraph">
+<p>Some protocols may specify a narrow range of possible valid string values that
+the field is expected to have. To specify such a valid value use <strong>validValue</strong>
+<a href="#intro-properties">property</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">"SomeStringField"</span> <span class="na">validValue=</span><span class="s">"some_valid_value"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is possible to provide a list of multiple valid values using child nodes.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">"SomeStringField"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;validValue</span> <span class="na">value=</span><span class="s">"some_valid_value1"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;validValue</span> <span class="na">value=</span><span class="s">"some_valid_value2"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;validValue</span> <span class="na">value=</span><span class="s">"some_valid_value3"</span> <span class="nt">/&gt;</span>
+            ...
+        <span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When using child nodes to specify the valid values, it is possible (but not necessary) to specify the versions of
+the protocol when the valid value was introduced and when it got deprecated.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">"SomeStringField"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;validValue</span> <span class="na">value=</span><span class="s">"some_valid_value1"</span> <span class="na">sinceVersion=</span><span class="s">"1"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;validValue</span> <span class="na">value=</span><span class="s">"some_valid_value2"</span> <span class="na">deprecated=</span><span class="s">"5"</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;validValue</span> <span class="na">value=</span><span class="s">"some_valid_value3"</span> <span class="na">sinceVersion=</span><span class="s">"3"</span> <span class="na">deprecated=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+            ...
+        <span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is also possible to combine a single XML attribute with other child nodes:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">"SomeStringField"</span> <span class="na">validValue=</span><span class="s">"some_valid_value1"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;validValue</span> <span class="na">value=</span><span class="s">"some_valid_value2"</span> <span class="nt">/&gt;</span>
+            ...
+        <span class="nt">&lt;/string&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When the protocol specification demands haveing a specific string value, then it is possible to
+combine it with the <a href="#fields-common-failing-read-of-the-field-on-invalid-value">failOnInvalid</a>
+property.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">"SomeStringField"</span> <span class="na">validValue=</span><span class="s">"some_required_value"</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="fields-string-single-valid-value">Single Valid Value</h4>
+<div class="paragraph">
+<p>Sometimes the <strong>&lt;string&gt;</strong> field has only one valid value and it must be initialized with it. The
+<strong>defaultValidValue</strong> <a href="#intro-properties">property</a> can be used as a replacement to the combination of
+<strong>defaultValue</strong> and <strong>validValue</strong> ones having to specify the same value:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span> <span class="na">version=</span><span class="s">"10"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;string</span> <span class="na">name=</span><span class="s">"SomeStringField"</span> <span class="na">defaultValidValue=</span><span class="s">"some_value"</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span> <span class="err">...</span> <span class="nt">/&gt;</span>
+
+        <span class="c">&lt;!-- Instead of:
+        &lt;string name="SomeStringField" defaultValue="some_value" validValue="some_value" failOnInvalid="true" ... /&gt;
+        --&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
 </div>
 <div class="paragraph">
 <p>Use <a href="#appendix-string">properties table</a> for future references.</p>
@@ -4499,7 +4714,7 @@ other means. It does NOT necessarily mean that all the bytes received from the I
 will be consumed.</p>
 </div>
 <div class="sect3">
-<h4 id="_default_value_3">Default Value</h4>
+<h4 id="fields-data-default-value">Default Value</h4>
 <div class="paragraph">
 <p>The default value of the <strong>&lt;data&gt;</strong> field when constructed can be specified
 using <strong>defaultValue</strong> <a href="#intro-properties">property</a>. The value of the
@@ -4525,7 +4740,7 @@ default constructed.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_fixed_length_2">Fixed Length</h4>
+<h4 id="fields-data-fixed-length">Fixed Length</h4>
 <div class="paragraph">
 <p>In case the data value needs to be serialized using predefined fixed length,
 use <strong>length</strong> property to specify the required value.</p>
@@ -4542,7 +4757,7 @@ use <strong>length</strong> property to specify the required value.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_length_prefix_2">Length Prefix</h4>
+<h4 id="fields-data-length-prefix">Length Prefix</h4>
 <div class="paragraph">
 <p>Many protocols prefix raw binary data with its length. The <strong>CommsDSL</strong> allows definition
 of such prefix using <strong>lengthPrefix</strong> child element, which must define prefix as
@@ -4617,6 +4832,114 @@ into account and generate correct code for various field operations
 <div class="paragraph">
 <p><strong>NOTE</strong>, that <strong>length</strong> and <strong>lengthPrefix</strong> properties
 are mutually exclusive, i.e. cannot be used together.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="fields-data-valid-values">Valid Values</h4>
+<div class="paragraph">
+<p>Some protocols may specify a narrow range of possible valid data values that
+the field is expected to have. To specify such a valid value use <strong>validValue</strong>
+<a href="#intro-properties">property</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">"SomeDataField"</span> <span class="na">validValue=</span><span class="s">"01 02 03"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is possible to provide a list of multiple valid values using child nodes.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">"SomeDataField"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;validValue</span> <span class="na">value=</span><span class="s">"01 02 03"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;validValue</span> <span class="na">value=</span><span class="s">"aa bb cc"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;validValue</span> <span class="na">value=</span><span class="s">"12 34 56 78"</span> <span class="nt">/&gt;</span>
+            ...
+        <span class="nt">&lt;/data&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When using child nodes to specify the valid values, it is possible (but not necessary) to specify the versions of
+the protocol when the valid value was introduced and when it got deprecated.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">"SomeDataField"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;validValue</span> <span class="na">value=</span><span class="s">"01 02 03"</span> <span class="na">sinceVersion=</span><span class="s">"1"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;validValue</span> <span class="na">value=</span><span class="s">"aa bb cc"</span> <span class="na">deprecated=</span><span class="s">"5"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;validValue</span> <span class="na">value=</span><span class="s">"12 34 56 78"</span> <span class="na">sinceVersion=</span><span class="s">"3"</span> <span class="na">deprecated=</span><span class="s">"4"</span> <span class="nt">/&gt;</span>
+            ...
+        <span class="nt">&lt;/data&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is also possible to combine a single XML attribute with other child nodes:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">"SomeDataField"</span> <span class="na">validValue=</span><span class="s">"01 02 03"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;validValue</span> <span class="na">value=</span><span class="s">"aa bb cc"</span> <span class="nt">/&gt;</span>
+            ...
+        <span class="nt">&lt;/data&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When the protocol specification demands haveing a specific data value, then it is possible to
+combine it with the <a href="#fields-common-failing-read-of-the-field-on-invalid-value">failOnInvalid</a>
+property.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">"SomeDataField"</span> <span class="na">validValue=</span><span class="s">"01 02 03"</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="fields-data-single-valid-value">Single Valid Value</h4>
+<div class="paragraph">
+<p>Sometimes the <strong>&lt;data&gt;</strong> field has only one valid value and it must be initialized with it. The
+<strong>defaultValidValue</strong> <a href="#intro-properties">property</a> can be used as a replacement to the combination of
+<strong>defaultValue</strong> and <strong>validValue</strong> ones having to specify the same value:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span> <span class="na">version=</span><span class="s">"10"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;fields&gt;</span>
+        <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">"SomeDataField"</span> <span class="na">defaultValidValue=</span><span class="s">"01 02 03"</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span> <span class="err">...</span> <span class="nt">/&gt;</span>
+
+        <span class="c">&lt;!-- Instead of:
+        &lt;data name="SomeDataField" defaultValue="01 02 03" validValue="01 02 03" failOnInvalid="true" ... /&gt;
+        --&gt;</span>
+    <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
 </div>
 <div class="paragraph">
 <p>Use <a href="#appendix-data">properties table</a> for future references.</p>
@@ -5083,7 +5406,7 @@ the following case-insensitive strings.</p>
 <p><strong>deprecated</strong> - Version of the protocol when the special name / meaning was deprecated.</p>
 </li>
 <li>
-<p><strong>displayName</strong> - Readable name to display for the special value in protocol debugging and visualization tools.</p>
+<p><strong>displayName</strong> - Human readable name of the value.</p>
 </li>
 </ul>
 </div>
@@ -5114,7 +5437,7 @@ property. It is done as protection against copy-paste errors. However,
 </div>
 </div>
 <div class="sect3">
-<h4 id="_default_value_4">Default Value</h4>
+<h4 id="_default_value_2">Default Value</h4>
 <div class="paragraph">
 <p>The default value of the <strong>&lt;float&gt;</strong> field when constructed can be specified
 using <strong>defaultValue</strong> property. If not specified, defaults to <strong>0.0</strong>.</p>
@@ -5369,7 +5692,7 @@ is set to <strong>true</strong>.</p>
 <h4 id="_extra_display_properties">Extra Display Properties</h4>
 <div class="paragraph">
 <p>When displaying the floating point value, held by the <strong>&lt;float&gt;</strong> field,
-GUI analysis tools require knowledge on how many digits after decimal point
+it may be required to specify amount of digits after decimal point
 need to be displayed. To provide this information, use <strong>displayDecimals</strong> <a href="#intro-properties">property</a>
 with numeric value.</p>
 </div>
@@ -5384,27 +5707,8 @@ with numeric value.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>If value of <strong>displayDecimals</strong> is <strong>0</strong>, then it is up to the GUI tool
+<p>If value of <strong>displayDecimals</strong> is <strong>0</strong>, then it is up to the displaying application
 to choose how many digits after decimal point to display.</p>
-</div>
-<div class="paragraph">
-<p>When <strong>&lt;special&gt;</strong> values are specified the protocol analysis tools are
-expected to display them next to actual numeric value of the field. The <strong>displaySpecials</strong>
-<a href="#intro-properties">property</a> with <a href="#intro-boolean">boolean</a> value
-is there to control this default behavior.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;fields&gt;</span>
-        <span class="nt">&lt;float</span> <span class="na">name=</span><span class="s">"SomeFloat"</span> <span class="na">type=</span><span class="s">"float"</span> <span class="na">displaySpecials=</span><span class="s">"false"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;special</span> <span class="na">name=</span><span class="s">"S1"</span> <span class="na">val=</span><span class="s">"0.0"</span> <span class="nt">/&gt;</span>
-            <span class="nt">&lt;special</span> <span class="na">name=</span><span class="s">"S2"</span> <span class="na">val=</span><span class="s">"nan"</span> <span class="nt">/&gt;</span>
-        <span class="nt">&lt;/int&gt;</span>
-    <span class="nt">&lt;/fields&gt;</span>
-<span class="nt">&lt;/schema&gt;</span></code></pre>
-</div>
 </div>
 <div class="paragraph">
 <p>Use <a href="#appendix-float">properties table</a> for future references.</p>
@@ -5561,7 +5865,10 @@ The <strong>tentative</strong> mode is there to perform <strong>read</strong> op
 only if there are non-consumed bytes left in the input buffer. This mode
 can be useful with protocols that just add fields at the end of the
 <a href="#messages-messages">message</a> in the new version,
-but the protocol itself doesn&#8217;t report its version in any other way.</p>
+but the protocol itself doesn&#8217;t report its version in any other way.
+When the <strong>read</strong> operation is complete, the mode of the field is expected to be
+changed automatically to either <strong>exist</strong> or <strong>missing</strong> depending on whether
+the relevant data was read or not.</p>
 </div>
 <div class="paragraph">
 <p>The default mode of the newly constructed <strong>&lt;optional&gt;</strong> field can be
@@ -5908,35 +6215,6 @@ operation of the <strong>&lt;optional&gt;</strong> field didn&#8217;t take place
 <span class="nt">&lt;/schema&gt;</span></code></pre>
 </div>
 </div>
-</div>
-<div class="sect3">
-<h4 id="fields-optional-extra-display-property">Extra Display Property</h4>
-<div class="paragraph">
-<p>By default GUI protocol analysis tools should allow manual update of the
-<strong>&lt;optional&gt;</strong> field mode. However, if the mode is controlled by the
-values of other fields, it is possible to disable manual update of the
-mode by using <strong>displayExtModeCtrl</strong>
-(stands for "display external mode control") <a href="#intro-properties">property</a>
-with <a href="#intro-boolean">boolean</a> value.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="na">id=</span><span class="s">"1"</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;set</span> <span class="na">name=</span><span class="s">"Flags"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;bit</span> <span class="na">name=</span><span class="s">"Val1Exists"</span> <span class="na">idx=</span><span class="s">"0"</span> <span class="nt">/&gt;</span>
-        <span class="nt">&lt;/set&gt;</span>
-        <span class="nt">&lt;optional</span> <span class="na">name=</span><span class="s">"Val1"</span> <span class="na">defaultMode=</span><span class="s">"missing"</span> <span class="na">cond=</span><span class="s">"$Flags.Val1Exists"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;displayExtModeCtrl</span> <span class="na">value=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
-            <span class="nt">&lt;field&gt;</span>
-                <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"ActVal1"</span> <span class="na">type=</span><span class="s">"uint32"</span> <span class="nt">/&gt;</span>
-            <span class="nt">&lt;/field&gt;</span>
-        <span class="nt">&lt;/optional&gt;</span>
-    <span class="nt">&lt;/fields&gt;</span>
-<span class="nt">&lt;/schema&gt;</span></code></pre>
-</div>
-</div>
 <div class="paragraph">
 <p>Use <a href="#appendix-optional">properties table</a> for future references.</p>
 </div>
@@ -5963,7 +6241,7 @@ field, member fields need to be listed as children XML elements of the <strong>&
 <pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <span class="nt">&lt;schema</span> <span class="na">name=</span><span class="s">"MyProtocol"</span> <span class="na">endian=</span><span class="s">"big"</span><span class="nt">&gt;</span>
     <span class="nt">&lt;fields&gt;</span>
-        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Key"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span> <span class="na">displayReadOnly=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Key"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span> <span class="na">fixedValue=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
 
         <span class="nt">&lt;variant</span> <span class="na">name=</span><span class="s">"Property"</span><span class="nt">&gt;</span>
             <span class="nt">&lt;bundle</span> <span class="na">name=</span><span class="s">"Prop1"</span><span class="nt">&gt;</span>
@@ -5984,14 +6262,22 @@ field, member fields need to be listed as children XML elements of the <strong>&
 <div class="paragraph">
 <p>The example above defines every <strong>key-value</strong> pair as <a href="#fields-bundle">&lt;bundle&gt; </a>
 field, where first field (<strong>key</strong>) reuses external definition of <strong>Key</strong> field and
-adds its default construction value as well as what value considered to be valid.
-<strong>NOTE</strong>, that every <strong>key</strong> member sets <strong>failOnInvalid</strong> property to <strong>true</strong>.
+adds its default construction value as well as what value considered to be valid.</p>
+</div>
+<div class="paragraph">
+<p><strong>NOTE</strong> that every <strong>key</strong> member sets
+<a href="#fields-common-failing-read-of-the-field-on-invalid-value">failOnInvalid</a> property to <strong>true</strong>.
 The code generator is expected to generate code that attempts <strong>read</strong> operation
 of every defined member field in the order of their definition. Once the <strong>read</strong>
 operation is successful, the right member has been found and the <strong>read</strong> operation
 needs to terminate. The <strong>in-order</strong> read is high level logic, the code generator
 is allowed to introduce optimizations as long as the outcome of detecting the
 right member is the same.</p>
+</div>
+<div class="paragraph">
+<p>Also <strong>note</strong> that the <a href="#fields-common-fixed-value-fields">fixedValue</a> property
+is set to <strong>true</strong> to prevent the application from explicitly updating the <strong>Key</strong> field
+after the element is constructed.</p>
 </div>
 <div class="paragraph">
 <p>If there is any other <a href="#intro-properties">property</a> defined as XML child
@@ -6025,7 +6311,7 @@ TLV (type / length / value) triplets.</p>
 <pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <span class="nt">&lt;schema</span> <span class="na">name=</span><span class="s">"MyProtocol"</span> <span class="na">endian=</span><span class="s">"big"</span><span class="nt">&gt;</span>
     <span class="nt">&lt;fields&gt;</span>
-        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Type"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span> <span class="na">displayReadOnly=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Type"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span> <span class="na">fixedValue=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
 
         <span class="nt">&lt;variant</span> <span class="na">name=</span><span class="s">"Property"</span><span class="nt">&gt;</span>
             <span class="nt">&lt;bundle</span> <span class="na">name=</span><span class="s">"Prop1"</span><span class="nt">&gt;</span>
@@ -6050,9 +6336,7 @@ TLV (type / length / value) triplets.</p>
 <p>Please <strong>note</strong> assigning <strong>semanticType</strong> property to be <strong>length</strong> for the
 <strong>Length</strong> field in every bundle. It specifies that the field contains
 remaining length of all the subsequent fields in the <strong>&lt;bundle&gt;</strong> and
-allows the code generator to produce correct code. The support for
-<strong>length</strong> value of <strong>semanticType</strong> has been introduced in <strong>v2</strong> of this
-specification.</p>
+allows the code generator to produce correct code.</p>
 </div>
 <div class="paragraph">
 <p>Quite often the developers wonder why there is a need to use <strong>remaining length</strong>
@@ -6065,7 +6349,7 @@ preserving forward / backward compatibility of the protocol. For example:</p>
 <pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <span class="nt">&lt;schema</span> <span class="na">name=</span><span class="s">"MyProtocol"</span> <span class="na">endian=</span><span class="s">"big"</span> <span class="na">version=</span><span class="s">"2"</span><span class="nt">&gt;</span>
     <span class="nt">&lt;fields&gt;</span>
-        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Type"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span> <span class="na">displayReadOnly=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Type"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span> <span class="na">fixedValue=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
 
         <span class="nt">&lt;variant</span> <span class="na">name=</span><span class="s">"Property"</span><span class="nt">&gt;</span>
             <span class="nt">&lt;bundle</span> <span class="na">name=</span><span class="s">"Prop1"</span><span class="nt">&gt;</span>
@@ -6096,7 +6380,7 @@ introduced in the future versions of the protocol while still operating correctl
 <pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <span class="nt">&lt;schema</span> <span class="na">name=</span><span class="s">"MyProtocol"</span> <span class="na">endian=</span><span class="s">"big"</span><span class="nt">&gt;</span>
     <span class="nt">&lt;fields&gt;</span>
-        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Type"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span> <span class="na">displayReadOnly=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Type"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span> <span class="na">fixedValue=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
 
         <span class="nt">&lt;variant</span> <span class="na">name=</span><span class="s">"Property"</span><span class="nt">&gt;</span>
             ...
@@ -6131,7 +6415,7 @@ to all the properties. Any new defined member field gets <strong>appended</stron
 <pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <span class="nt">&lt;schema</span> <span class="na">name=</span><span class="s">"MyProtocol"</span> <span class="na">endian=</span><span class="s">"big"</span> <span class="na">version=</span><span class="s">"2"</span><span class="nt">&gt;</span>
     <span class="nt">&lt;fields&gt;</span>
-        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Type"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span> <span class="na">displayReadOnly=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Type"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span> <span class="na">fixedValue=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
 
         <span class="nt">&lt;variant</span> <span class="na">name=</span><span class="s">"Property"</span><span class="nt">&gt;</span>
             <span class="nt">&lt;bundle</span> <span class="na">name=</span><span class="s">"Prop1"</span><span class="nt">&gt;</span>
@@ -6175,7 +6459,7 @@ child node, which wraps the replacing fields.</p>
 <pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <span class="nt">&lt;schema</span> <span class="na">name=</span><span class="s">"MyProtocol"</span> <span class="na">endian=</span><span class="s">"big"</span><span class="nt">&gt;</span>
     <span class="nt">&lt;fields&gt;</span>
-        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Type"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span> <span class="na">displayReadOnly=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"Type"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">failOnInvalid=</span><span class="s">"true"</span> <span class="na">fixedValue=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
 
         <span class="nt">&lt;variant</span> <span class="na">name=</span><span class="s">"Property"</span><span class="nt">&gt;</span>
             <span class="nt">&lt;bundle</span> <span class="na">name=</span><span class="s">"Prop1"</span><span class="nt">&gt;</span>
@@ -6267,31 +6551,6 @@ name.</p>
 <div class="paragraph">
 <p>Negative number as value of <strong>defaultMember</strong> property will force the
 <strong>&lt;variant&gt;</strong> field not to have a default member.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_extra_display_property">Extra Display Property</h4>
-<div class="paragraph">
-<p>By default GUI protocol analysis tools should display the index of the
-held member when displaying <strong>&lt;variant&gt;</strong> field in "read only" mode.
-However, for some occasions this information may be irrelevant. To hide
-display of index use <strong>displayIdxReadOnlyHidden</strong>
-<a href="#intro-properties">property</a> with <a href="#intro-boolean">boolean</a> value.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;schema</span> <span class="na">name=</span><span class="s">"MyProtocol"</span> <span class="na">endian=</span><span class="s">"big"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;fields&gt;</span>
-        <span class="nt">&lt;variant</span> <span class="na">name=</span><span class="s">"Property"</span> <span class="na">displayIdxReadOnlyHidden=</span><span class="s">"true"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;bundle</span> <span class="na">name=</span><span class="s">"Prop1"</span><span class="nt">&gt;</span>
-                ...
-            <span class="nt">&lt;/bundle&gt;</span>
-            ...
-        <span class="nt">&lt;/variant&gt;</span>
-    <span class="nt">&lt;/fields&gt;</span>
-<span class="nt">&lt;/schema&gt;</span></code></pre>
-</div>
 </div>
 <div class="paragraph">
 <p>Use <a href="#appendix-variant">properties table</a> for future references.</p>
@@ -6915,7 +7174,7 @@ generated class. The <a href="#intro-properties">property</a> is <strong>descrip
 <h3 id="messages-display-name">Display Name</h3>
 <div class="paragraph">
 <p>When various analysis tools display message details, the preference is to
-display proper space separated name (which is defined using <strong>displayName</strong>
+display proper human readable and space separated name (which is defined using <strong>displayName</strong>
 <a href="#intro-properties">property</a>) rather than using a <a href="#intro-names">name</a>.</p>
 </div>
 <div class="listingblock">
@@ -7548,6 +7807,29 @@ the referenced field. The code generator may also not impose many restrictions o
 Usage of the wrong <strong>&lt;interface&gt;</strong> class with the missing referenced
 field in the end application may result in compilation errors.</p>
 </div>
+<div class="paragraph">
+<p>It is possible to copy construction requirements from one message definition to another to avoid unnecessary duplication
+using <strong>copyConstructFrom</strong> property.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="err">...</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;construct&gt;</span>
+            <span class="nt">&lt;and&gt;</span>
+                ...
+            <span class="nt">&lt;/and&gt;</span>
+        <span class="nt">&lt;/construct&gt;</span>
+        ...
+    <span class="nt">&lt;/message&gt;</span>
+
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg2"</span> <span class="na">copyConstructFrom=</span><span class="s">"Msg1"</span> <span class="err">...</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/message&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="messages-read-conditions">Extra Read Conditions</h3>
@@ -7674,6 +7956,29 @@ To avoid unnecessary statements duplication there is <strong>constructAsReadCond
 <span class="nt">&lt;/schema&gt;</span></code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>It is possible to copy read conditions from one message definition to another to avoid unnecessary duplication
+using <strong>copyReadCondFrom</strong> property.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="err">...</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;readCond&gt;</span>
+            <span class="nt">&lt;and&gt;</span>
+                ...
+            <span class="nt">&lt;/and&gt;</span>
+        <span class="nt">&lt;/readCond&gt;</span>
+        ...
+    <span class="nt">&lt;/message&gt;</span>
+
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg2"</span> <span class="na">copyReadCondFrom=</span><span class="s">"Msg1"</span> <span class="err">...</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/message&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="messages-valid-conditions">Extra Validity Conditions</h3>
@@ -7779,6 +8084,27 @@ to the <strong>constructAsReadCond</strong> property described <a href="#message
 <span class="nt">&lt;/schema&gt;</span></code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>It is possible to copy validity conditions from one message definition to another to avoid unnecessary duplication
+using <strong>copyValidCondFrom</strong> property.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="err">...</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;validCond&gt;</span>
+            ...
+        <span class="nt">&lt;/validCond&gt;</span>
+        ...
+    <span class="nt">&lt;/message&gt;</span>
+
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg2"</span> <span class="na">copyValidCondFrom=</span><span class="s">"Msg1"</span> <span class="err">...</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/message&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="messages-fail-read-on-invalid">Failing Read on Invalid Contents</h3>
@@ -7823,6 +8149,65 @@ case any of the member fields has an invalid value.</p>
 <span class="nt">&lt;/schema&gt;</span></code></pre>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="messages-reusing-other-messages">Reusing Other Messages</h3>
+<div class="paragraph">
+<p>Sometimes two different messages are very similar but differ in one or two particular aspects. It is possible
+to reuse the other message definition using <strong>reuse</strong> property (similar to <a href="#fields-common-reusing-other-fields">fields</a>),
+especially when things like <a href="#messages-construct-requirements">construction requirements</a>,
+<a href="#messages-read-conditions">read conditions</a>, and <a href="#messages-valid-conditions">validity conditions</a> need
+to be copied.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="err">...</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;construct&gt;</span>
+        <span class="nt">&lt;/construct&gt;</span>
+        <span class="nt">&lt;readCond&gt;</span>
+        <span class="nt">&lt;/readCond&gt;</span>
+        <span class="nt">&lt;fields&gt;</span>
+            ...
+        <span class="nt">&lt;/fields&gt;</span>
+    <span class="nt">&lt;/message&gt;</span>
+
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg2"</span> <span class="na">reuse=</span><span class="s">"Msg1"</span> <span class="err">...</span><span class="nt">&gt;</span>
+        <span class="c">&lt;!-- Added fields --&gt;</span>
+        ...
+    <span class="nt">&lt;/message&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Similar to using the <a href="#messages-fields">copyFieldsFrom</a> property any new fields defined are added to ones
+copied from the <strong>reuse</strong>-d message.</p>
+</div>
+<div class="paragraph">
+<p>In case of reusing other message definition, only the message
+definition properties are copied. The extra code that the original message might inject is <strong>NOT</strong> included
+in such copy by default. The copying of injected code must be specified explicitly using
+<a href="#messages-copying-injected-code">copyCodeFrom</a> property described above, or to avoid repetition of the
+<a href="#intro-references">reference</a> string, another <strong>reuseCode</strong> property with
+boolean value can be used in addition to <strong>reuse</strong> one.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg2"</span> <span class="na">reuse=</span><span class="s">"Msg1"</span> <span class="na">reuseCode=</span><span class="s">"true"</span> <span class="err">...</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/message&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Note</strong> that some message definition properties mentioned earlier (such as
+<strong>copyFieldsFrom</strong>, <strong>copyConstructFrom</strong>, <strong>copyReadCondFrom</strong>, etc&#8230;&#8203;) are <em>action</em> ones. They
+force copy of elements from one message to another and disappear when it comes to
+<a href="#messages-reusing-other-messages">reuse</a> of the message definition that uses them.</p>
+</div>
 <div class="paragraph">
 <p>Use <a href="#appendix-message">properties table</a> for future references.</p>
 </div>
@@ -7865,7 +8250,7 @@ These fields are there to hold extra values delivered as part of message
 <a href="#frames-frames">framing</a>.</p>
 </div>
 <div class="sect2">
-<h3 id="_interface_name">Interface Name</h3>
+<h3 id="interfaces-name">Interface Name</h3>
 <div class="paragraph">
 <p>Every interface definition must specify its <a href="#intro-names">name</a> using
 <strong>name</strong> <a href="#intro-properties">property</a>.</p>
@@ -7882,7 +8267,7 @@ These fields are there to hold extra values delivered as part of message
 </div>
 </div>
 <div class="sect2">
-<h3 id="_description">Description</h3>
+<h3 id="interfaces-description">Description</h3>
 <div class="paragraph">
 <p>It is possible to provide a description of the interface about what it is and
 how it is expected to be used. This description is only for documentation
@@ -7906,7 +8291,7 @@ generated class. The <a href="#intro-properties">property</a> is <strong>descrip
 </div>
 </div>
 <div class="sect2">
-<h3 id="_more_about_fields">More About Fields</h3>
+<h3 id="interfaces-fields">More About Fields</h3>
 <div class="paragraph">
 <p>Similar to <strong>&lt;message&gt;</strong> every <strong>&lt;interface&gt;</strong> has zero or more <a href="#fields-fields">fields</a> that
 can be specified as child XML elements. If there is any other
@@ -7988,11 +8373,54 @@ for fields that, were introduced and/or deprecated at some stage, i.e. use
 </div>
 </div>
 <div class="sect2">
-<h3 id="_alias_names_to_fields">Alias Names to Fields</h3>
+<h3 id="interfaces-alias-names">Alias Names to Fields</h3>
 <div class="paragraph">
 <p>Sometimes a contained field may be renamed and/or moved. It is possible to
 create alias names for the fields to keep the old client code being able to compile
 and work. Please refer to <a href="#aliases-aliases">Aliases</a> chapter for more details.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="interfaces-reusing-other-fields">Reusing Other Interfaces</h3>
+<div class="paragraph">
+<p>Sometimes two different interfaces are very similar but differ in one or two particular aspects. It is possible
+to reuse the other interface definition using <strong>reuse</strong> property (similar to <a href="#fields-common-reusing-other-fields">fields</a>
+and <a href="#messages-reusing-other-fields">messages</a>).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;interface</span> <span class="na">name=</span><span class="s">"Interface1"</span> <span class="err">...</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/interface&gt;</span>
+
+    <span class="nt">&lt;interface</span> <span class="na">name=</span><span class="s">"Interface2"</span> <span class="na">reuse=</span><span class="s">"Interface1"</span> <span class="err">...</span><span class="nt">&gt;</span>
+        <span class="c">&lt;!-- Added fields --&gt;</span>
+        ...
+    <span class="nt">&lt;/interface&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Similar to using the <a href="#interfaces-fields">copyFieldsFrom</a> property any new fields defined are added to ones
+copied from the <strong>reuse</strong>-d interface.</p>
+</div>
+<div class="paragraph">
+<p>In case of reusing other interface definition, only the interface
+definition properties are copied. The extra code that the original interface might inject is <strong>NOT</strong> included
+in such copy by default. To include injected code use <strong>reuseCode</strong> property with
+boolean value can be used in addition to <strong>reuse</strong> one.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;interface</span> <span class="na">name=</span><span class="s">"Interface2"</span> <span class="na">reuse=</span><span class="s">"Interface1"</span> <span class="na">reuseCode=</span><span class="s">"true"</span> <span class="err">...</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/interface&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
 </div>
 <div class="paragraph">
 <p>Use <a href="#appendix-interface">properties table</a> for future references.</p>
@@ -8089,8 +8517,8 @@ traffic reuse the same byte occupied by the <code>SomeEnum</code> field, like be
 <pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
     <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="na">id=</span><span class="s">"0x1"</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"F1"</span>
-            <span class="err">&lt;enum</span> <span class="na">name=</span><span class="s">"SomeEnum"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"2"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"F1"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;enum</span> <span class="na">name=</span><span class="s">"SomeEnum"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"2"</span><span class="nt">&gt;</span>
                 <span class="nt">&lt;validValue</span> <span class="na">name=</span><span class="s">"V1"</span> <span class="na">val=</span><span class="s">"0"</span> <span class="nt">/&gt;</span>
                 <span class="nt">&lt;validValue</span> <span class="na">name=</span><span class="s">"V2"</span> <span class="na">val=</span><span class="s">"1"</span> <span class="nt">/&gt;</span>
                 <span class="nt">&lt;validValue</span> <span class="na">name=</span><span class="s">"V3"</span> <span class="na">val=</span><span class="s">"2"</span> <span class="nt">/&gt;</span>
@@ -8113,8 +8541,8 @@ like this:</p>
 <span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
     <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="na">id=</span><span class="s">"0x1"</span><span class="nt">&gt;</span>
         <span class="nt">&lt;fields&gt;</span>
-            <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"F1"</span>
-                <span class="err">&lt;enum</span> <span class="na">name=</span><span class="s">"SomeEnum"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"2"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;bitfield</span> <span class="na">name=</span><span class="s">"F1"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;enum</span> <span class="na">name=</span><span class="s">"SomeEnum"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"2"</span><span class="nt">&gt;</span>
                     ...
                 <span class="nt">&lt;/enum&gt;</span>
                 <span class="nt">&lt;int</span> <span class="na">name=</span><span class="s">"SomeInt"</span> <span class="na">type=</span><span class="s">"uint8"</span> <span class="na">bitLength=</span><span class="s">"6"</span> <span class="nt">/&gt;</span>
@@ -8132,7 +8560,7 @@ that are allowed to have <strong>&lt;alias&gt;</strong>-es are <a href="#message
 <a href="#interfaces-interfaces">&lt;interface&gt; </a>, and <a href="#fields-bundle">&lt;bundle&gt; </a>.</p>
 </div>
 <div class="sect2">
-<h3 id="_description_2">Description</h3>
+<h3 id="aliases-description">Description</h3>
 <div class="paragraph">
 <p>The <strong>&lt;alias&gt;</strong> node may also have <strong>description</strong>
 <a href="#intro-properties">property</a> which is expected to find its way into
@@ -8157,65 +8585,9 @@ the generated code as a comment for the relevant access functions.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_more_on_aliases_in_message_es">More on Aliases in &lt;message&gt;-es</h3>
+<h3 id="aliases-reuse">Reusing Definition</h3>
 <div class="paragraph">
-<p>When a new <a href="#messages-messages">&lt;message&gt; </a> is defined, it can
-copy all the fields from other already defined <a href="#messages-messages">&lt;message&gt; </a> or <a href="#fields-bundle">&lt;bundle&gt; </a>
-(using <strong>copyFieldsFrom</strong> <a href="#intro-properties">property</a>).
-By default all the <a href="#aliases-aliases">&lt;alias&gt; </a> definitions are also copied.
-It is possible to modify this default behavior by using <strong>copyFieldsAliases</strong>
-<a href="#intro-properties">property</a> with <a href="#intro-boolean">boolean</a> value.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="na">id=</span><span class="s">"1"</span><span class="nt">&gt;</span>
-        ...
-    <span class="nt">&lt;/message&gt;</span>
-
-    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg2"</span> <span class="na">id=</span><span class="s">"2"</span> <span class="na">copyFieldsAliases=</span><span class="s">"false"</span><span class="nt">&gt;</span>
-        ...
-    <span class="nt">&lt;/message&gt;</span>
-
-<span class="nt">&lt;/schema&gt;</span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_more_on_aliases_in_interface_es">More on Aliases in &lt;interface&gt;-es</h3>
-<div class="paragraph">
-<p>Similar to <a href="#messages-messages">&lt;message&gt; </a>-es
-<a href="#interfaces-interfaces">&lt;interface&gt; </a> can also use <strong>copyFieldsFrom</strong>
-<a href="#intro-properties">property</a> to copy its field from some other
-<a href="#interfaces-interfaces">&lt;interface&gt; </a> or <a href="#fields-bundle">&lt;bundle&gt; </a> definition and have all
-the aliases copied by default. The control of such default copying behavior
-is also done by using <strong>copyFieldsAliases</strong>
-<a href="#intro-properties">property</a> with <a href="#intro-boolean">boolean</a> value.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;interface</span> <span class="na">name=</span><span class="s">"Interface1"</span><span class="nt">&gt;</span>
-        ...
-    <span class="nt">&lt;/interface&gt;</span>
-
-    <span class="nt">&lt;interface</span> <span class="na">name=</span><span class="s">"Interface2"</span> <span class="na">copyFieldsAliases=</span><span class="s">"false"</span><span class="nt">&gt;</span>
-        ...
-    <span class="nt">&lt;/interface&gt;</span>
-
-<span class="nt">&lt;/schema&gt;</span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_more_on_aliases_in_bundle_es">More on Aliases in &lt;bundle&gt;-es</h3>
-<div class="paragraph">
-<p>When a new <a href="#fields-bundle">&lt;bundle&gt; </a> field is defined it can
-reuse definition of already defined other <a href="#fields-bundle">&lt;bundle&gt; </a>
-(using <strong>reuse</strong> <a href="#intro-properties">property</a>).
-By default all the <a href="#aliases-aliases">&lt;alias&gt; </a> definitions are also copied.
+<p>By default when the original definition is <a href="#fields-common-reusing-other-fields">reused</a> its aliases are also copied.
 It is possible to modify this default behavior by using <strong>reuseAliases</strong>
 <a href="#intro-properties">property</a> with <a href="#intro-boolean">boolean</a> value.</p>
 </div>
@@ -8234,6 +8606,32 @@ It is possible to modify this default behavior by using <strong>reuseAliases</st
             ...
         <span class="nt">&lt;/bundle&gt;</span>
     <span class="nt">&lt;/fields&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="aliases-copy">Copying Fields</h3>
+<div class="paragraph">
+<p>When a new <a href="#messages-messages">&lt;message&gt; </a> or <a href="#interfaces-interfaces">&lt;interface&gt; </a> is defined, it can
+copy all the fields from other already defined <a href="#messages-messages">&lt;message&gt; </a>, <a href="#interfaces-interfaces">&lt;interface&gt; </a>, or <a href="#fields-bundle">&lt;bundle&gt; </a>
+(using <strong>copyFieldsFrom</strong> <a href="#intro-properties">property</a>).
+By default all the <a href="#aliases-aliases">&lt;alias&gt; </a> definitions are also copied.
+It is possible to modify this default behavior by using <strong>copyFieldsAliases</strong>
+<a href="#intro-properties">property</a> with <a href="#intro-boolean">boolean</a> value.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span> <span class="na">id=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/message&gt;</span>
+
+    <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg2"</span> <span class="na">id=</span><span class="s">"2"</span> <span class="na">copyFieldsAliases=</span><span class="s">"false"</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/message&gt;</span>
+
 <span class="nt">&lt;/schema&gt;</span></code></pre>
 </div>
 </div>
@@ -8282,7 +8680,7 @@ of such transport wraping using <strong>&lt;frame&gt;</strong> XML node.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_description_3">Description</h3>
+<h3 id="_description">Description</h3>
 <div class="paragraph">
 <p>It is possible to provide a description of the frame about what it is and
 how it is expected to be used. This description is only for documentation
@@ -8422,7 +8820,7 @@ using <strong>name</strong> <a href="#intro-properties">property</a>.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_description_4">Description</h4>
+<h4 id="_description_2">Description</h4>
 <div class="paragraph">
 <p>It is possible to provide a description of the layer about what it is and
 how it is expected to be used. This description is only for documentation
@@ -9467,7 +9865,7 @@ in this document for a quick reference.</p>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><code>$</code></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Reference to a sibling field.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reference to a sibling or a member field.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><code>^</code></p></td>
@@ -9625,14 +10023,6 @@ Applipable only to members of the <a href="#messages-messages">&lt;message&gt; <
 <td class="tableblock halign-left valign-top"><p class="tableblock">Human readable description of the field.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayHidden</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Don&#8217;t display field at all in visual analysis tool(s).</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayName</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
@@ -9641,20 +10031,20 @@ Applipable only to members of the <a href="#messages-messages">&lt;message&gt; <
 <td class="tableblock halign-left valign-top"><p class="tableblock">Name of the field to display. If empty, the code generator must use value of property <strong>name</strong> instead. In order to force empty name to display, use "_" (underscore).</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayReadOnly</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Disable modification of the field in visual analysis tool(s).</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>failOnInvalid</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Fail <strong>read</strong> operation if read value is invalid.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>fixedValue</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Remove an ability to update field&#8217;s value after the object construction.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>forceGen</strong></p></td>
@@ -9753,6 +10143,14 @@ Applicable only to members of the <a href="#messages-messages">&lt;message&gt; <
 <td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Version of the protocol in which field was introduced.<br>
 Applicable only to members of the <a href="#messages-messages">&lt;message&gt; </a> or <a href="#fields-bundle">&lt;bundle&gt; </a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validateMinLength</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">numeric</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specify expected minimal serialization length of the field.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validOverride</strong></p></td>
@@ -9928,7 +10326,7 @@ Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Human readable name of the value to display in various analysis tools.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Human readable name of the value.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
@@ -10024,7 +10422,7 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Indicates to GUI analysis tools to display this field as floating point value with specified number of digits after the fraction point.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Use specified number of digits after the fraction point when displaying the field&#8217;s value as floating point.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayOffset</strong></p></td>
@@ -10032,15 +10430,7 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Indicates to GUI analysis tools to add specified offset value to a field&#8217;s value when displaying it.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displaySpecials</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">2</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control displaying <strong>&lt;special&gt;</strong> values in analysis tools.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Add specified offset value to a field&#8217;s value when displaying it.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>endian</strong></p></td>
@@ -10193,7 +10583,7 @@ Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">2</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name to display in various analysis tools.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Human readable name of the value.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
@@ -10378,7 +10768,7 @@ Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Human readable name of the bit to display in various analysis tools.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Human readable name of the bit.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>idx</strong></p></td>
@@ -10453,12 +10843,28 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyValidCondFrom</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-references">reference</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#fields-bitfield">&lt;bitfield&gt; </a> field definition from which extra validity condition needs to be copied.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>endian</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">"big" or "little"</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">endian of <a href="#schema-schema">schema</a></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Endian of the field.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validCond</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Extra validity check operation condition.</p></td>
 </tr>
 </tbody>
 </table>
@@ -10488,6 +10894,11 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;replace&gt;</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">5</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Wraps replacing member fields after copying using <strong>reuse</strong> property.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;validCond&gt;</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Multiple extra validity check operation conditions.</p></td>
 </tr>
 </tbody>
 </table>
@@ -10521,12 +10932,28 @@ for detailed description.</p>
 </thead>
 <tbody>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyValidCondFrom</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-references">reference</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#fields-bundle">&lt;bundle&gt; </a> field definition from which extra validity condition needs to be copied.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reuseAliases</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">3</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control copy of the defined <a href="#aliases-aliases">aliases</a> from reused other <a href="#fields-bundle">&lt;bundle&gt; </a> when  <strong>reuse</strong> property is used.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control copy of the defined <a href="#aliases-aliases">aliases</a> from reused other <a href="#fields-bundle">&lt;bundle&gt; </a> when <strong>reuse</strong> property is used.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validCond</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Extra validity check operation condition.</p></td>
 </tr>
 </tbody>
 </table>
@@ -10561,6 +10988,11 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;replace&gt;</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">5</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Wraps replacing member fields after copying using <strong>reuse</strong> property.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;validCond&gt;</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Multiple extra validity check operation conditions.</p></td>
 </tr>
 </tbody>
 </table>
@@ -10602,6 +11034,14 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default value.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>defaultValidValue</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default valid value.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>length</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
@@ -10616,6 +11056,14 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Prefix field containing length of the string. Cannot be used tegether with <strong>length</strong> or <strong>zeroTermSuffix</strong>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validValue</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Valid value.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>zeroTermSuffix</strong></p></td>
@@ -10665,6 +11113,14 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default value. Case-insensitive hexadecimal string.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>defaultValidValue</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default valid value. Case-insensitive hexadecimal string.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>length</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-numeric">unsigned</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
@@ -10679,6 +11135,14 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Prefix field containing length of the data. Cannot be used tegether with <strong>length</strong>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validValue</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Valid value. Case-insensitive hexadecimal string.</p></td>
 </tr>
 </tbody>
 </table>
@@ -10812,15 +11276,7 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Indicates to GUI analysis how many digits need to be displayed after the fraction point.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displaySpecials</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">2</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control displaying <strong>&lt;special&gt;</strong> values in analysis tools.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specifies number of digits to be displayed after the fraction point.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>endian</strong></p></td>
@@ -10949,7 +11405,7 @@ Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">2</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name to display in various analysis tools.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Human readable name of the value.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
@@ -11069,14 +11525,6 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">tentative</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default mode of the field. See also <a href="#appendix-optional-default-mode">Default Mode Strings</a> below.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayExtModeCtrl</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Disable manual update of the mode in GUI analysis tools.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>field</strong></p></td>
@@ -11212,14 +11660,6 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">-1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default member. Negative number means no member selected.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayIdxReadOnlyHidden</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Hide active index of the member when field displayed in read-only mode.</p></td>
 </tr>
 </tbody>
 </table>
@@ -11639,7 +12079,15 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">5</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Specify message, overriding or other extra code of which needs to be copied.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Message from which overriding or other extra code needs to be copied.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyConstructFrom</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-references">reference</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Message from which to copy construction requirements.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyFieldsAliases</strong></p></td>
@@ -11656,6 +12104,22 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Message or bundle field definition from which fields need to be copied.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyReadCondFrom</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-references">reference</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Message from which to copy read conditions.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyValidCondFrom</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-references">reference</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Message from which to copy validity conditions.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>customizable</strong></p></td>
@@ -11763,6 +12227,30 @@ Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>refresh</strong> operation.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reuse</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-references">reference</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Message definition of which to copy.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reuseAliases</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control copy of the defined <a href="#aliases-aliases">aliases</a> from reused other <a href="#messages-messages">&lt;message&gt; </a> when <strong>reuse</strong> property is used.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reuseCode</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">In case of <strong>reuse</strong> apply <strong>copyCodeFrom</strong> with the same <a href="#intro-references">reference</a> string.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>removed</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
@@ -11795,14 +12283,6 @@ Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Specify expected minimal serialization length of the message fields.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>writeOverride</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>write</strong> operation.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>validCond</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">6</p></td>
@@ -11817,6 +12297,14 @@ Must be greater than value of <strong>sinceVersion</strong>.</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>valid</strong> retrieval.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>writeOverride</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">"any", "replace", "extend", "none"</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">4</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">any</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control the overriding code for <strong>write</strong> operation.</p></td>
 </tr>
 </tbody>
 </table>
@@ -11929,6 +12417,30 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Name of the interface.</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reuse</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-references">reference</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Interface definition of which to copy.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reuseAliases</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control copy of the defined <a href="#aliases-aliases">aliases</a> from reused other <a href="#interfaces-interfaces">&lt;interface&gt; </a> when <strong>reuse</strong> property is used.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>reuseCode</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">In case of <strong>reuse</strong> apply <strong>copyCodeFrom</strong> with the same <a href="#intro-references">reference</a> string.</p></td>
+</tr>
 </tbody>
 </table>
 <div class="paragraph">
@@ -11948,16 +12460,6 @@ for detailed description.</p>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>copyFieldsAliases</strong></p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-boolean">bool</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Control copy of the defined <a href="#aliases-aliases">aliases</a> when <strong>copyFieldsFrom</strong> property is used to copy fields from the other <a href="#interfaces-interfaces">&lt;interface&gt; </a> or <a href="#fields-bundle">&lt;bundle&gt; </a>.</p></td>
-</tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>&lt;fields&gt;</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
@@ -12338,8 +12840,8 @@ for detailed description.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 6.1<br>
-Last updated 2023-06-14 08:39:50 +1000
+Version 7.0<br>
+Last updated 2025-01-12 09:26:03 +1000
 </div>
 </div>
 </body>
