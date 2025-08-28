@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.20">
 <meta name="author" content="Alex Robenko">
-<title>CommsDSL Specification v7.0</title>
+<title>CommsDSL Specification v7.1</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -475,6 +475,10 @@ pre.rouge .gi {
   color: #116329;
   background-color: #dafbe1;
 }
+pre.rouge .ges {
+  font-weight: bold;
+  font-style: italic;
+}
 pre.rouge .kc {
   color: #0550ae;
 }
@@ -550,11 +554,11 @@ pre.rouge .gs {
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>CommsDSL Specification v7.0</h1>
+<h1>CommsDSL Specification v7.1</h1>
 <div class="details">
 <span id="author" class="author">Alex Robenko</span><br>
-<span id="revnumber">version 7.0,</span>
-<span id="revdate">2025-01</span>
+<span id="revnumber">version 7.1,</span>
+<span id="revdate">2025-08</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -580,6 +584,7 @@ pre.rouge .gs {
 <li><a href="#schema-name">Protocol Name</a></li>
 <li><a href="#schema-endian">Endian</a></li>
 <li><a href="#schema-description">Description</a></li>
+<li><a href="#schema-display-name">Display Name</a></li>
 <li><a href="#schema-version">Protocol (Schema) Version</a></li>
 <li><a href="#schema-dsl-version">DSL Version</a></li>
 <li><a href="#_allowing_non_unique_message_ids">Allowing Non-Unique Message IDs</a></li>
@@ -636,6 +641,13 @@ pre.rouge .gs {
 <li><a href="#interfaces-reusing-other-fields">Reusing Other Interfaces</a></li>
 </ul>
 </li>
+<li><a href="#namespaces-namespaces">Namespaces</a>
+<ul class="sectlevel2">
+<li><a href="#namespaces-name">Namespace Name</a></li>
+<li><a href="#namespaces-description">Description</a></li>
+<li><a href="#namespaces-display-name">Display Name</a></li>
+</ul>
+</li>
 <li><a href="#aliases-aliases">Aliases</a>
 <ul class="sectlevel2">
 <li><a href="#aliases-description">Description</a></li>
@@ -645,9 +657,10 @@ pre.rouge .gs {
 </li>
 <li><a href="#frames-frames">Frames</a>
 <ul class="sectlevel2">
-<li><a href="#_name">Name</a></li>
-<li><a href="#_description">Description</a></li>
-<li><a href="#_layers">Layers</a></li>
+<li><a href="#frames-name">Name</a></li>
+<li><a href="#frames-description">Description</a></li>
+<li><a href="#frames-display-name">Display Name</a></li>
+<li><a href="#frames-layers">Layers</a></li>
 <li><a href="#frames-common">Common Properties of Layers</a></li>
 <li><a href="#frames-payload">&lt;payload&gt; Layer</a></li>
 <li><a href="#frames-id">&lt;id&gt; Layer</a></li>
@@ -688,6 +701,7 @@ pre.rouge .gs {
 <li><a href="#appendix-units">Units</a></li>
 <li><a href="#appendix-message">Properties of &lt;message&gt;</a></li>
 <li><a href="#appendix-interface">Properties of &lt;interface&gt;</a></li>
+<li><a href="#appendix-namespace">Properties of &lt;namespace&gt;</a></li>
 <li><a href="#appendix-alias">Properties of &lt;alias&gt;</a></li>
 <li><a href="#appendix-frame">Properties of &lt;frame&gt;</a></li>
 <li><a href="#appendix-layers">Common Properties of Frame Layers</a></li>
@@ -1066,7 +1080,7 @@ relevant classes in a separate namespace(s) (if such feature is provided by the
 language) or introduce relevant prefixes into the names to avoid name clashes.</p>
 </div>
 <div class="paragraph">
-<p>The namespace is defined using <strong>&lt;ns&gt;</strong> node with single <strong>name</strong> property.
+<p>The namespace is defined using <strong>&lt;ns&gt;</strong> node with a required <strong>name</strong> property.
 It can contain all the mentioned <a href="#schema-schema">previously</a> nodes.</p>
 </div>
 <div class="listingblock">
@@ -1645,6 +1659,24 @@ long multiline description it is recommended to define it as a text child elemen
     ...
 <span class="nt">&lt;/schema&gt;</span></code></pre>
 </div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="schema-display-name">Display Name</h3>
+<div class="paragraph">
+<p>When documenting protocol schema the value of <strong>displayName</strong> property can be used as more descriptive
+human readable name.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="na">name=</span><span class="s">"MyProtocol"</span> <span class="na">displayName=</span><span class="s">"Some Protocol Schema"</span> <span class="err">...</span><span class="nt">&gt;</span>
+    ...
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In case <strong>displayName</strong> is empty, the <strong>name</strong> <a href="#intro-properties">property</a> is expected be used instead.</p>
 </div>
 </div>
 <div class="sect2">
@@ -8430,6 +8462,139 @@ boolean value can be used in addition to <strong>reuse</strong> one.</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="namespaces-namespaces">Namespaces</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The namespaces can be used to help divide a specific protocol into sub-elements as
+well as define multiple sub-protocols in the same schema.</p>
+</div>
+<div class="paragraph">
+<p>For example, having different messages with the same names defined in different namespaces.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;ns</span> <span class="na">name=</span><span class="s">"sub1"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span><span class="nt">&gt;</span>
+            ...
+        <span class="nt">&lt;/message&gt;</span>
+        <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg2"</span> <span class="err">...</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/ns&gt;</span>
+
+    <span class="nt">&lt;ns</span> <span class="na">name=</span><span class="s">"sub2"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span><span class="nt">&gt;</span>
+            ...
+        <span class="nt">&lt;/message&gt;</span>
+        <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg2"</span> <span class="err">...</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/ns&gt;</span>
+
+    <span class="c">&lt;!-- Common Frame --&gt;</span>
+    <span class="nt">&lt;frame</span> <span class="na">name=</span><span class="s">"Frame"</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/frame&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Another example is having multiple sub-protocols with their own frames:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;ns</span> <span class="na">name=</span><span class="s">"prot1"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span><span class="nt">&gt;</span>
+            ...
+        <span class="nt">&lt;/message&gt;</span>
+        <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg2"</span> <span class="err">...</span> <span class="nt">/&gt;</span>
+
+        <span class="nt">&lt;frame</span> <span class="na">name=</span><span class="s">"Frame1"</span><span class="nt">&gt;</span>
+            ...
+        <span class="nt">&lt;/frame&gt;</span>
+    <span class="nt">&lt;/ns&gt;</span>
+
+    <span class="nt">&lt;ns</span> <span class="na">name=</span><span class="s">"prot2"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg1"</span><span class="nt">&gt;</span>
+            ...
+        <span class="nt">&lt;/message&gt;</span>
+        <span class="nt">&lt;message</span> <span class="na">name=</span><span class="s">"Msg2"</span> <span class="err">...</span> <span class="nt">/&gt;</span>
+
+        <span class="nt">&lt;frame</span> <span class="na">name=</span><span class="s">"Frame2"</span><span class="nt">&gt;</span>
+            ...
+        <span class="nt">&lt;/frame&gt;</span>
+    <span class="nt">&lt;/ns&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="namespaces-name">Namespace Name</h3>
+<div class="paragraph">
+<p>Every namespace definition must specify its <a href="#intro-names">name</a> using
+<strong>name</strong> <a href="#intro-properties">property</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;ns</span> <span class="na">name=</span><span class="s">"ns1"</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/ns&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="namespaces-description">Description</h3>
+<div class="paragraph">
+<p>It is possible to provide a description of the namespace about what it is and
+what it contains to be used. This description is only for documentation
+purposes and may find it&#8217;s way into the generated code as a comment for the
+generated namespace. The <a href="#intro-properties">property</a> is <strong>description</strong>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="err">...</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;ns</span> <span class="na">name=</span><span class="s">"ns1"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;description&gt;</span>
+            Some long
+            multiline
+            description
+        <span class="nt">&lt;/description&gt;</span>
+        ...
+    <span class="nt">&lt;/ns&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="namespaces-display-name">Display Name</h3>
+<div class="paragraph">
+<p>When documenting a namespace the value of <strong>displayName</strong> property can be used as more descriptive
+human readable name.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="nt">&gt;</span>
+    <span class="nt">&lt;ns</span> <span class="na">name=</span><span class="s">"ns1"</span> <span class="na">displayName=</span><span class="s">"Some Summary"</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/ns&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In case <strong>displayName</strong> is empty, the <strong>name</strong> <a href="#intro-properties">property</a> is expected be used instead.</p>
+</div>
+<div class="paragraph">
+<p>Use <a href="#appendix-namespace">properties table</a> for future references.</p>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="aliases-aliases">Aliases</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -8663,7 +8828,7 @@ of such transport wraping using <strong>&lt;frame&gt;</strong> XML node.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_name">Name</h3>
+<h3 id="frames-name">Name</h3>
 <div class="paragraph">
 <p>Every frame definition must specify its <a href="#intro-names">name</a> using
 <strong>name</strong> <a href="#intro-properties">property</a>.</p>
@@ -8680,7 +8845,7 @@ of such transport wraping using <strong>&lt;frame&gt;</strong> XML node.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_description">Description</h3>
+<h3 id="frames-description">Description</h3>
 <div class="paragraph">
 <p>It is possible to provide a description of the frame about what it is and
 how it is expected to be used. This description is only for documentation
@@ -8704,7 +8869,27 @@ generated class. The <a href="#intro-properties">property</a> is <strong>descrip
 </div>
 </div>
 <div class="sect2">
-<h3 id="_layers">Layers</h3>
+<h3 id="frames-display-name">Display Name</h3>
+<div class="paragraph">
+<p>When documenting a frame the value of <strong>displayName</strong> property can be used as more descriptive
+human readable name.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="nt">&gt;</span>
+    <span class="nt">&lt;frame</span> <span class="na">name=</span><span class="s">"Frame"</span> <span class="na">displayName=</span><span class="s">"Protocol Frame"</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/frame&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In case <strong>displayName</strong> is empty, the <strong>name</strong> <a href="#intro-properties">property</a> is expected be used instead.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="frames-layers">Layers</h3>
 <div class="paragraph">
 <p>The protocol framing is defined using so called "layers", which are additional
 abstraction on top of <a href="#fields-fields">fields</a>, where every such layer
@@ -8801,7 +8986,7 @@ However, there are common properties, that are applicable to every layer.
 They are summarized below.</p>
 </div>
 <div class="sect3">
-<h4 id="_name_2">Name</h4>
+<h4 id="frames-layer-name">Name</h4>
 <div class="paragraph">
 <p>Every layer must define it&#8217;s <a href="#intro-names">name</a>, which is expected to be
 used by a code generator when defining a relevant class. The name is defined
@@ -8820,7 +9005,7 @@ using <strong>name</strong> <a href="#intro-properties">property</a>.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_description_2">Description</h4>
+<h4 id="frames-layer-description">Description</h4>
 <div class="paragraph">
 <p>It is possible to provide a description of the layer about what it is and
 how it is expected to be used. This description is only for documentation
@@ -8843,6 +9028,29 @@ generated class. The <a href="#intro-properties">property</a> is <strong>descrip
     <span class="nt">&lt;/frame&gt;</span>
 <span class="nt">&lt;/schema&gt;</span></code></pre>
 </div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="frames-layer-display-name">Display Name</h4>
+<div class="paragraph">
+<p>When documenting a layer the value of <strong>displayName</strong> property can be used as more descriptive
+human readable name.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;schema</span> <span class="nt">&gt;</span>
+    <span class="nt">&lt;frame</span> <span class="na">name=</span><span class="s">"ProtocolFrame"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;id</span> <span class="na">name=</span><span class="s">"Id"</span> <span class="na">displayName=</span><span class="s">"Message ID"</span><span class="nt">&gt;</span>
+            ...
+        <span class="nt">&lt;/id&gt;</span>
+        <span class="nt">&lt;payload</span> <span class="na">name=</span><span class="s">"Data"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/frame&gt;</span>
+<span class="nt">&lt;/schema&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In case <strong>displayName</strong> is empty, the <strong>name</strong> <a href="#intro-properties">property</a> is expected be used instead.</p>
 </div>
 </div>
 <div class="sect3">
@@ -9918,6 +10126,14 @@ in this document for a quick reference.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Human readable description of the protocol.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayName</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Human readable name of the schema. May be used in the documentation.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>dslVersion</strong></p></td>
@@ -12470,6 +12686,60 @@ for detailed description.</p>
 <div style="page-break-after: always;"></div>
 </div>
 <div class="sect2">
+<h3 id="appendix-namespace">Properties of &lt;namespace&gt;</h3>
+<div class="paragraph">
+<p>Refer to <a href="#namespaces-namespaces">Namespaces</a> chapter
+for detailed description.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 10%;">
+<col style="width: 8%;">
+<col style="width: 8%;">
+<col style="width: 10%;">
+<col style="width: 36%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-center valign-middle">Property Name</th>
+<th class="tableblock halign-center valign-middle">Allowed Type / Value</th>
+<th class="tableblock halign-center valign-middle">DSL Version</th>
+<th class="tableblock halign-center valign-middle">Required</th>
+<th class="tableblock halign-center valign-middle">Default Value</th>
+<th class="tableblock halign-center valign-middle">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>description</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Human readable description of the namespace.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayName</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Human readable name of the namespace. May be used in the documentation.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">yes</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the namespace.</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+</div>
+<div class="sect2">
 <h3 id="appendix-alias">Properties of &lt;alias&gt;</h3>
 <div class="paragraph">
 <p>Refer to <a href="#aliases-aliases">Aliases</a> chapter for detailed description.
@@ -12558,6 +12828,14 @@ for detailed description.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Human readable description of the frame.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayName</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Human readable name of the frame. May be used in the documentation.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>name</strong></p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><a href="#intro-names">name</a> string</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">1</p></td>
@@ -12625,6 +12903,14 @@ for detailed description.</p>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
 <td class="tableblock halign-center valign-middle"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Human readable description of the layer.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>displayName</strong></p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">string</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">7</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">no</p></td>
+<td class="tableblock halign-center valign-middle"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Human readable name of the layer. May be used in the documentation.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>field</strong></p></td>
@@ -12840,8 +13126,8 @@ for detailed description.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.0<br>
-Last updated 2025-01-12 09:26:03 +1000
+Version 7.1<br>
+Last updated 2025-08-26 09:23:25 +1000
 </div>
 </div>
 </body>
